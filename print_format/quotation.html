@@ -1,0 +1,207 @@
+<style>
+    .print-format {
+        margin-left: 0mm;
+        margin-right: 0mm;
+        margin-top: 10mm;
+        margin-bottom: 60mm;
+        font-size: 10pt;
+    }
+</style>
+
+{% set company_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fields=["parent"]) %}
+{% set cmp_addr = frappe.get_doc("Address", company_addresses[0]['parent']) %}
+{% set company = frappe.get_doc("Company", doc.company) %}
+{% set pay_addr = frappe.get_doc("Address", doc.customer_address) %}
+
+{% if doc.contact_person %}
+    {% set contact = frappe.get_doc("Contact", doc.contact_person) %}
+{% endif %}
+
+<!-- HEAD -->
+<div id="header">
+    {% if company.company_logo %}
+        <img id="logo" src="{{ company.company_logo }}">
+    {% endif %}
+</div>
+
+<div class="contact-row">
+    <div id="address">
+        <div id="sender">
+            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
+                {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
+                {{ cmp_addr.pincode }} {{ cmp_addr.city }}
+                {% if cmp_addr.country != pay_addr.country -%}
+                    &#183; {{ cmp_addr.country | upper }}
+                {%- endif %}
+            </p>
+        </div>
+        {{ doc.customer_name }}<br />
+        {% if contact %}
+                {%- if contact.salutation -%}
+                    {{ contact.salutation }}
+                {%- endif %}
+                {%- if contact.salutation in ["Hr.", "Herr"] %}n{% endif %} 
+                {{ contact.first_name }} {{ contact.last_name }}<br>
+        {% endif %}
+        {{ doc.address_display }}
+    </div>
+
+    <div id="contact">
+        <table>
+            <tr>
+                <td>{{ _("Phone") }}:</td>
+                <td class="text-right">+49 30 112358</td>
+            </tr>
+            <tr>
+                <td>{{ _("Email") }}:</td>
+                <td class="text-right">mail@example.org</td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>{{ _("Date") }}:</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Valid Till") }}:</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.valid_till, "dd. MMMM yyyy") }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Our Sign") }}:</td>
+                <td class="text-right">{{ doc.name }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="faltmarke-1">-</div>
+<div id="lochmarke">-</div>
+<div id="faltmarke-2">-</div>
+
+<!-- CONTENT -->
+<div id="text">
+	<div id="subject">
+		<strong>{{ _(doc.doctype) }}: {{ doc.name }}</strong>
+    </div>
+    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+        {% if not contact %}
+            <p>Sehr geehrte Damen und Herren,</p>
+        {% else %}
+            <p>Sehr geehrte{% if contact.salutation in ["Hr.", "Herr"] %}r{% endif %} {{ contact.salutation }} {{ contact.last_name }},<p>
+        {% endif %}
+        <br>
+        <p>gerne machen wir Ihnen folgendes Angebot:</p>
+    {% else %}
+        {% if not contact %}
+            <p>Dear Sir or Madam,</p>
+        {% else %}
+            <p>Dear {{ contact.salutation }} {{ contact.last_name }},<p>
+        {% endif %}
+        <br>
+        <p>we are happy to provide you the following quotation:</p>
+    {% endif %}
+    <br>
+    <br>
+	<table class="w-100">
+		<tr class="black-border">
+			<th style="width: 10%">{{ _("Sr") }}</th>
+			<th style="width: 30%">
+				{{ _("Description") }}</th>
+			<th style="width: 10%">{{ _("Unit") }}</th>
+			<th style="width: 10%">{{ _("Qty") }}</th>
+			<th style="width: 15%">{{ _("Price") }}</th>
+			<!-- <th style="width: 15%">{{ _("Discount") }}</th> -->
+			<th style="width: 15%" class="text-right">{{ _("Amount") }}</th>
+		</tr>
+		{% for n in doc.items %}
+		<tr>
+			<td>{{ loop.index }}</td>
+			<td><b>{{ _(n.item_name) }}</b><br>
+				{{ n.description }}</td>
+			<td>{{ _(n.uom) }}</td>
+			<td>{{ n.qty }}</td>
+			<td>{{ n.get_formatted('rate') }}</td>
+			<!-- <td>{{ n.get_formatted('discount_amount') }}</td> -->
+			<td class="text-right">{{ n.get_formatted('amount') }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<p><br></p>
+    <table class="w-100 black-border">
+        <tr>
+			<td>{{ _("Total") }}</td>
+			<td class="text-right">{{ doc.get_formatted('total') }}</td>
+        </tr>
+        {% if doc.additional_discount_percentage %}
+            <tr>
+                <td>
+                    {{ _("Discount") }} {{ doc.get_formatted('additional_discount_percentage') }} &percnt;
+                </td>
+                <td class="text-right">
+                    {{ doc.get_formatted('discount_amount') }}
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+			<td>{{ _("Net Total") }}</td>
+			<td class="text-right">{{ doc.get_formatted('net_total') }}</td>
+        </tr>
+        {% if doc.tax_category == "Reverse Charge" -%}
+            <tr>
+                <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                <td class="text-right"></td>
+            </tr>
+        {% else %}
+            {% for tax_row in doc.taxes -%}
+                <tr>
+                    <td>
+                    {{ tax_row.description }}
+                    </td>
+                    <td class="text-right">
+                        {{ tax_row.get_formatted('tax_amount') }}
+                    </td>
+                </tr>
+            {%- endfor %}
+        {%- endif %}
+		<tr>
+			<td>
+				<strong>{{ _("Grand Total") }}</strong></td>
+			<td class="text-right"><strong>{{ doc.get_formatted('grand_total') }}</strong>
+			</td>
+        </tr>
+    </table>
+    <br>
+
+    <div class="epilogue">
+        {% if doc.terms %}
+            {{ doc.terms }}
+            <br>
+        {% endif %}
+
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+            <p>Wir danken Ihnen herzlich für Ihre Anfrage und freuen uns auf die weitere Zusammenarbeit.</p>
+            <br>
+            <div class="salutation">
+                <p>Beste Grüße nach {{ pay_addr.city }}</p>
+                <p>Ihr Team der Meine GmbH</p>
+            </div>
+        {% else %}
+            <p>We thank you very much for your request and are looking forward to further business with you.</p>
+            <br>
+            <div class="salutation">
+                <p>Best regards,</p>
+                <p>Your team at Meine GmbH</p>
+            </div>
+        {%- endif %}
+    </div>
+    <br>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-html" class="visible-pdf">
+    <p id="pagenum">
+        {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+    </p>
+    <div class="print-format-footer">
+        {{ footer }}
+    </div>
+</div>

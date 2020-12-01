@@ -1,0 +1,159 @@
+.print-format {
+    padding: 0;
+    position: relative;
+
+    #header {
+        text-align: right;
+        width: 100%;
+        /* ( 45 mm - 10 mm margin ) */
+        height: 35mm;
+        /* Overwrite empty header inserted by frappe */
+        margin-top: -10mm;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #logo {
+        display: block;
+        height: 15mm;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        bottom: 0;
+        /* Könnte auch 10mm sein*/
+        right: 20mm;
+    }
+
+    .contact-row {
+        position: relative;
+        overflow: hidden;
+        left: 20mm;
+        height: 45mm;
+        /* müsste eigentlich 180mm sein, sieht mit 170 aber besser aus. */
+        width: 170mm;
+    }
+
+    #sender {
+        position: relative;
+        font-size: 75%;
+        height: 17.7mm;
+    }
+
+    #sender p {
+        position: absolute;
+        width: 85mm;
+        bottom: 0;
+    }
+
+    #address {
+        float: left;
+        width: 85mm;
+        padding-left: 5mm;
+    }
+
+    #contact {
+        float: right;
+        width: 75mm;
+        margin-top: 5mm;
+    }
+
+    #contact > table {
+        width: 100%;
+    }
+
+    #contact td {
+        padding: 1.5px !important;
+    }
+
+    #subject {
+        margin-bottom: 2em;
+        height: 5mm;
+        font-weight: bold;
+    }
+
+    #faltmarke-1 {
+        position: absolute;
+        /* ( 105 mm - 10 mm margin ) */
+        top: 95mm;
+    }
+
+    #lochmarke {
+        position: absolute;
+        /* ( 148.5 mm - 10 mm margin ) */
+        top: 138.5mm;
+    }
+
+    #faltmarke-2 {
+        position: absolute;
+        /* ( 210 mm - 10 mm margin ) */
+        top: 200mm;
+    }
+
+    #text {
+        margin-top: 8.46mm;
+        margin-left: 25mm;
+        margin-right: 20mm;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .text-small {
+        font-size: 10px;
+    }
+
+    .black-border {
+        border-top: solid black 1px;
+        border-bottom: solid black 1px;
+    }
+
+    .w-100 {
+        width: 100%;
+    }
+
+    table {
+        /* --- Nice page breaks for tables --- */
+        page-break-inside: auto;
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+    
+        thead {
+            display: table-header-group;
+        }
+    
+        tfoot {
+            display: table-footer-group;
+        }
+    }
+
+    .epilogue {
+        text-align: justify;
+
+        .salutation {
+            page-break-inside: avoid;
+        }
+    }
+}
+
+.print-format-footer {
+    margin-left: 25mm;
+    padding-right: 20mm;
+}
+
+#pagenum {
+    text-align: right;
+    margin-right: 20mm;
+    margin-top: 4.23mm;
+    margin-bottom: 4.23mm;
+}
+
+body, html {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}

@@ -1,0 +1,45 @@
+<table class="footer-table">
+    <tbody>
+        <tr>
+            <td>Meine GmbH</td>
+            <td>{{ _("Geschäftsführer") }}:</td>
+            <td>Berliner Volksbank</td>
+        </tr>
+        <tr>
+            <td>Kurfürstendamm 26, 10719 Berlin</td>
+            <td>Max Muster</td>
+            <td>IBAN: DE88 1009 0000 1234 5678 92</td>
+        </tr>
+        <tr>
+            <td>{{ _("Tel.") }}: +49 30 112358</td>
+            <td>{{ _("USt-IdNr") }}.: DE11235813</td>
+            <td>BIC: BEVODEBB</td>
+        </tr>
+        <tr>
+            <td>E-Mail: mail@example.org</td>
+            <td>{{ _("Amtsgericht Berlin") }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>https://example.org</td>
+            <td>{{ _("Handelsregister") }}: HRB 11235</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+<style>
+    .footer-table tbody tr td:not(:last-child) {
+        padding: 0 65px 0 0 !important;
+    }
+
+    .footer-table tbody tr td:last-child {
+        padding: 0 !important;
+    }
+
+    .footer-table {
+        font-size: 7pt;
+    }
+</style>
