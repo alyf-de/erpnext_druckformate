@@ -102,28 +102,32 @@
     <br>
     <br>
 	<table class="w-100">
-		<tr class="black-border">
-			<th style="width: 10%">{{ _("Sr") }}</th>
-			<th style="width: 30%">
-				{{ _("Description") }}</th>
-			<th style="width: 10%">{{ _("Unit") }}</th>
-			<th style="width: 10%">{{ _("Qty") }}</th>
-			<th style="width: 15%">{{ _("Price") }}</th>
-			<!-- <th style="width: 15%">{{ _("Discount") }}</th> -->
-			<th style="width: 15%" class="text-right">{{ _("Amount") }}</th>
-		</tr>
-		{% for n in doc.items %}
-		<tr>
-			<td>{{ loop.index }}</td>
-			<td><b>{{ _(n.item_name) }}</b><br>
-				{{ n.description }}</td>
-			<td>{{ _(n.uom) }}</td>
-			<td>{{ n.qty }}</td>
-			<td>{{ n.get_formatted('rate') }}</td>
-			<!-- <td>{{ n.get_formatted('discount_amount') }}</td> -->
-			<td class="text-right">{{ n.get_formatted('amount') }}</td>
-		</tr>
-		{% endfor %}
+        <thead class="black-border">
+            <tr>
+                <th style="width: 10%">{{ _("Sr") }}</th>
+                <th style="width: 30%">
+                    {{ _("Description") }}</th>
+                <th style="width: 10%">{{ _("Unit") }}</th>
+                <th style="width: 10%">{{ _("Qty") }}</th>
+                <th style="width: 15%">{{ _("Price") }}</th>
+                <!-- <th style="width: 15%">{{ _("Discount") }}</th> -->
+                <th style="width: 15%" class="text-right">{{ _("Amount") }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for n in doc.items %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><b>{{ _(n.item_name) }}</b><br>
+                    {{ n.description }}</td>
+                <td>{{ _(n.uom) }}</td>
+                <td>{{ n.qty }}</td>
+                <td>{{ n.get_formatted('rate') }}</td>
+                <!-- <td>{{ n.get_formatted('discount_amount') }}</td> -->
+                <td class="text-right">{{ n.get_formatted('amount') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
 	</table>
 	<p><br></p>
     <table class="w-100 black-border">
