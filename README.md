@@ -48,7 +48,17 @@ Alle Druckformate sind [Jinja Templates](https://jinja.palletsprojects.com/en/2.
 
 Außerdem können einige Python- und Frappe-Funktionen genutzt werden. Beipielsweise hinterlegt `{% set company = frappe.get_doc("Company", doc.company) %}` alle Daten des zugehörigen Unternehmens in der variable `company`. Danach könnte beispielsweise die dort hinterlegte Website mit `{{ company.website }}` eingefügt werden.
 
-Frappe stellt einige eigene Variablen wie `footer` oder `print_settings` zur Verfügung, die in jedem Print Format genutzt werden können. Eine Auflistung der verfügbaren Variablen findet sich hier: https://github.com/frappe/frappe/blob/4c6b58da2699189e6992707254f7a95f5c7df64a/frappe/www/printview.py#L148-L157 .
+Frappe stellt einige eigene Variablen wie `footer` oder `print_settings` zur Verfügung, die in jedem Print Format genutzt werden können. Eine Auflistung der verfügbaren Variablen findet sich in der datei [printview.py](https://github.com/frappe/frappe/blob/4c6b58da2699189e6992707254f7a95f5c7df64a/frappe/www/printview.py#L148-L157).
+
+Weitere Dateien, die dem Verständnis, der Inspiration oder Fehlersuche dienen können:
+
+- [standard.css](https://github.com/frappe/frappe/blob/8b7c976f680b2aac1b33cf45720beaf653ccdad0/frappe/templates/styles/standard.css)
+
+    CSS für das Standard-Druckformat
+
+- [standard.html](https://github.com/frappe/frappe/blob/8b7c976f680b2aac1b33cf45720beaf653ccdad0/frappe/templates/print_formats/standard.html)
+
+    Jinja-Template für das Standard-Druckformat
 
 ### Übersetzungen
 
