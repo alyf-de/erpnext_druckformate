@@ -3,7 +3,6 @@
     position: relative;
 
     #header {
-        text-align: right;
         width: 100%;
         /* ( 45 mm - 10 mm margin ) */
         height: 35mm;
@@ -11,6 +10,8 @@
         margin-top: -10mm;
         overflow: hidden;
         position: relative;
+        margin-left: 25mm;
+        margin-right: 20mm;
     }
 
     .contact-row {
