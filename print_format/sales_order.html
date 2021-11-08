@@ -19,9 +19,9 @@
 
 <!-- HEAD -->
 <div id="header">
-    {% if company.company_logo %}
-        <img id="logo" src="{{company.company_logo}}">
-    {% endif %}
+    <div class="letter-head">
+        {{ letter_head }}
+    </div>
 </div>
 
 <div class="contact-row">
@@ -232,7 +232,7 @@
             <br>
             <div class="salutation">
                 <p>Best regards,</p>
-                <p>Your team at Meine GmbH</p>
+                <p>Your team at {{ company.company_name }}</p>
             </div>
         {%- endif %}
     </div>
