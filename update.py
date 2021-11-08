@@ -2,6 +2,7 @@ import os
 from getpass import getpass
 from subprocess import run
 
+import typer
 from frappeclient import FrappeClient
 
 ERPNEXT_URL = 'https://erp.alyf.cloud' # Bitte anpassen!
@@ -19,9 +20,13 @@ def update_css():
 	run(['sass', '--style=compressed', input_path, output_path], check=True)
 	return output_path
 
-def main():
-	password = getpass()
-	username = input('Username: ')
+
+def main(username: str=None, password: str=None):
+	while not username:
+		username = input('Username: ')
+
+	while not password:
+		password = getpass()
 
 	css = None
 	css_path = update_css()
@@ -46,5 +51,6 @@ def main():
 				'css': css
 			})
 
+
 if __name__ == '__main__':
-	main()
+	typer.run(main)
