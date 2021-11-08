@@ -71,22 +71,28 @@
         font-weight: bold;
     }
 
-    #faltmarke-1 {
+    .din-mark {
+        height: 1pt;
+        background-color: black;
         position: absolute;
+    }
+
+    #faltmarke-1 {
         /* ( 105 mm - 10 mm margin ) */
         top: 95mm;
+        width: 12mm;
     }
 
     #lochmarke {
-        position: absolute;
         /* ( 148.5 mm - 10 mm margin ) */
         top: 138.5mm;
+        width: 7mm;
     }
 
     #faltmarke-2 {
-        position: absolute;
         /* ( 210 mm - 10 mm margin ) */
         top: 200mm;
+        width: 12mm;
     }
 
     #text {
