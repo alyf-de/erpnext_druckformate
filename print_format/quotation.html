@@ -101,12 +101,12 @@
     {% endif %}
     <br>
     <br>
-	<table class="w-100">
+
+    <table class="w-100 text-small">
         <thead class="black-border">
             <tr>
-                <th style="width: 10%">{{ _("Sr") }}</th>
-                <th style="width: 30%">
-                    {{ _("Description") }}</th>
+                <th style="width: 5%">{{ _("Sr") }}</th>
+                <th style="width: 45%">{{ _("Description") }}</th>
                 <th style="width: 10%">{{ _("Unit") }}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
                 <th style="width: 15%">{{ _("Price") }}</th>
@@ -114,6 +114,7 @@
                 <th style="width: 15%" class="text-right">{{ _("Amount") }}</th>
             </tr>
         </thead>
+
         <tbody>
             {% for n in doc.items %}
             <tr>
@@ -121,58 +122,86 @@
                 <td><b>{{ _(n.item_name) }}</b><br>
                     {{ n.description }}</td>
                 <td>{{ _(n.uom) }}</td>
-                <td>{{ n.qty }}</td>
-                <td>{{ n.get_formatted('rate') }}</td>
-                <!-- <td>{{ n.get_formatted('discount_amount') }}</td> -->
-                <td class="text-right">{{ n.get_formatted('amount') }}</td>
+                <td>{{ n.get_formatted("qty") }}</td>
+                <td>{{ n.get_formatted("rate") }}</td>
+                <!-- <td>{{ n.get_formatted("discount_amount") }}</td> -->
+                <td class="text-right">{{ n.get_formatted("amount") }}</td>
             </tr>
             {% endfor %}
         </tbody>
-	</table>
-	<p><br></p>
-    <table class="w-100 black-border">
-        <tr>
-			<td>{{ _("Total") }}</td>
-			<td class="text-right">{{ doc.get_formatted('total') }}</td>
-        </tr>
-        {% if doc.additional_discount_percentage %}
-            <tr>
-                <td>
-                    {{ _("Discount") }} {{ doc.get_formatted('additional_discount_percentage') }} &percnt;
-                </td>
-                <td class="text-right">
-                    {{ doc.get_formatted('discount_amount') }}
-                </td>
-            </tr>
-        {% endif %}
-        <tr>
-			<td>{{ _("Net Total") }}</td>
-			<td class="text-right">{{ doc.get_formatted('net_total') }}</td>
-        </tr>
-        {% if doc.tax_category == "Reverse Charge" -%}
-            <tr>
-                <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
-                <td class="text-right"></td>
-            </tr>
-        {% else %}
-            {% for tax_row in doc.taxes -%}
+
+        <tfoot class="black-border" style="display:table-row-group;">
+            {% if doc.additional_discount_percentage %}
                 <tr>
+                    <td></td>
+                    <td>{{ _("Total") }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">{{ doc.get_formatted("total") }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>{{ _("Discount") }}</td>
+                    <td></td>
+                    <td></td>
                     <td>
-                    {{ tax_row.description }}
+                        {{ doc.get_formatted("additional_discount_percentage") }} &percnt;
                     </td>
                     <td class="text-right">
-                        {{ tax_row.get_formatted('tax_amount') }}
+                        {{ doc.get_formatted("discount_amount") }}
                     </td>
                 </tr>
-            {%- endfor %}
-        {%- endif %}
-		<tr>
-			<td>
-				<strong>{{ _("Grand Total") }}</strong></td>
-			<td class="text-right"><strong>{{ doc.get_formatted('grand_total') }}</strong>
-			</td>
-        </tr>
+            {% endif %}
+            <tr>
+                <td></td>
+                <td>{{ _("Net Total") }}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="text-right">{{ doc.get_formatted("net_total") }}</td>
+            </tr>
+            {% if doc.tax_category == "Reverse Charge" -%}
+                <tr>
+                    <td></td>
+                    <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"></td>
+                </tr>
+            {% else %}
+                {% for tax_row in doc.taxes -%}
+                    {% if tax_row.tax_amount or print_settings.print_taxes_with_zero_amount %}
+                        <tr>
+                            <td></td>
+                            <td>
+                            {{ tax_row.description }}
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-right">
+                                {{ tax_row.get_formatted("tax_amount") }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {%- endfor %}
+            {%- endif %}
+            <tr>
+                <td></td>
+                <td>
+                    <strong>{{ _("Grand Total") }}</strong>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="text-right"><strong>{{ doc.get_formatted("grand_total") }}</strong>
+                </td>
+            </tr>
+        </tfoot>
     </table>
+
     <br>
 
     <div class="epilogue">
