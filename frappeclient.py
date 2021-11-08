@@ -27,16 +27,8 @@ import requests
 import json
 
 from urllib.parse import quote
-
-try:
-	from StringIO import StringIO
-except:
-	from io import StringIO
-
-try:
-    unicode
-except NameError:
-    unicode = str
+from base64 import b64encode
+from io import StringIO
 
 
 class AuthError(Exception):
