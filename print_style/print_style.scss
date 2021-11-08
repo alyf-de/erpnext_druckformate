@@ -95,7 +95,7 @@
     }
 
     .text-small {
-        font-size: 10px;
+        font-size: 10pt;
     }
 
     .black-border {
@@ -110,6 +110,7 @@
     table {
         /* --- Nice page breaks for tables --- */
         page-break-inside: auto;
+        table-layout: fixed;
 
         tr {
             page-break-inside: avoid;
@@ -121,7 +122,7 @@
         }
     
         tfoot {
-            display: table-footer-group;
+            display: table-row-group;
         }
     }
 
