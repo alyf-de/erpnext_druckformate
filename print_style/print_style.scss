@@ -132,6 +132,16 @@
             page-break-inside: avoid;
         }
     }
+
+    .ql-editor {
+        line-height: unset;
+        font-family: unset;
+        overflow: hidden;
+
+        p {
+            margin: unset;
+        }
+    }
 }
 
 .print-format-footer {
