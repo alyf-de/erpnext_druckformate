@@ -217,7 +217,7 @@
             <br>
             <div class="salutation">
                 <p>Beste Grüße nach {{ pay_addr.city }}</p>
-                <p>Ihr Team der Meine GmbH</p>
+                <p>Ihr Team der {{ company.company_name }}</p>
             </div>
         {% else %}
             <p>Unless otherwise stated, the date of delivery or performance corresponds to the date of invoice. Please transfer the invoice amount to the account stated below, stating the reason for payment "{{ doc.name }}".</p><br>
@@ -225,7 +225,7 @@
             <br>
             <div class="salutation">
                 <p>Best regards,</p>
-                <p>Your team at Meine GmbH</p>
+                <p>Your team at {{ company.company_name }}</p>
             </div>
         {%- endif %}
     </div>

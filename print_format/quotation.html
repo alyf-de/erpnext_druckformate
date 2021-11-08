@@ -186,14 +186,14 @@
             <br>
             <div class="salutation">
                 <p>Beste Grüße nach {{ pay_addr.city }}</p>
-                <p>Ihr Team der Meine GmbH</p>
+                <p>Ihr Team der {{ company.company_name }}</p>
             </div>
         {% else %}
             <p>We thank you very much for your request and are looking forward to further business with you.</p>
             <br>
             <div class="salutation">
                 <p>Best regards,</p>
-                <p>Your team at Meine GmbH</p>
+                <p>Your team at {{ company.company_name }}</p>
             </div>
         {%- endif %}
     </div>
