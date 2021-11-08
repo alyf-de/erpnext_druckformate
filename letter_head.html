@@ -1,29 +1,33 @@
+{% set company = frappe.get_doc("Company", doc.company) %}
+{% set company_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fieldname="parent") %}
+{% set address = frappe.get_doc("Address", company_address_name) if company_address_name else None %}
+
 <table class="footer-table">
     <tbody>
         <tr>
-            <td>Meine GmbH</td>
-            <td>{{ _("Geschäftsführer") }}:</td>
-            <td>Berliner Volksbank</td>
+            <td>{{ company.company_name }}</td>
+            <td>{{ _("Managing Directors") }}:</td>
+            <td>Berliner Volksbank</td> <!-- Your company's bank name -->
         </tr>
         <tr>
-            <td>Kurfürstendamm 26, 10719 Berlin</td>
-            <td>Max Muster</td>
-            <td>IBAN: DE88 1009 0000 1234 5678 92</td>
+            <td>{% if address %}{{ address.address_line1 }} &#183; {{ address.pincode }} {{ address.city }}{% endif %}</td>
+            <td>Max Muster</td> <!-- Your company's managing directors -->
+            <td>{{ _("IBAN") }}: DE88 1009 0000 1234 5678 92</td>
         </tr>
         <tr>
-            <td>{{ _("Tel.") }}: +49 30 112358</td>
-            <td>{{ _("USt-IdNr") }}.: DE11235813</td>
-            <td>BIC: BEVODEBB</td>
+            <td>{{ _("Phone") }}: {{ company.phone }}</td>
+            <td>{{ _("Tax ID") }}.: {{ company.tax_id }}</td>
+            <td>{{ _("BIC") }}: BEVODEBB</td> <!-- Your company's BIC -->
         </tr>
         <tr>
-            <td>E-Mail: mail@example.org</td>
-            <td>{{ _("Amtsgericht Berlin") }}</td>
+            <td>{{ _("Email") }}: {{ company.email }}</td>
+            <td>Amtsgericht Berlin</td> <!-- Your company's register court -->
             <td></td>
             <td></td>
         </tr>
         <tr>
-            <td>https://example.org</td>
-            <td>{{ _("Handelsregister") }}: HRB 11235</td>
+            <td>{{ company.website }}</td>
+            <td>{{ _("Trade Register Number") }}: HRB 11235</td> <!-- Your company's trade register number -->
             <td></td>
             <td></td>
         </tr>
