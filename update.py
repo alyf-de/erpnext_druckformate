@@ -5,25 +5,26 @@ from subprocess import run
 import typer
 from frappeclient import FrappeClient
 
-ERPNEXT_URL = 'https://erp.alyf.cloud' # Bitte anpassen!
-PRINT_STYLE_PATH = 'print_style/print_style'
+ERPNEXT_URL = "https://erp.alyf.cloud"  # Bitte anpassen!
+PRINT_STYLE_PATH = "print_style/print_style"
 PRINT_FORMATS = {
 	# 'Dateiname': 'Name des Print Format in ERPNext'
-	'quotation.html': 'Angebot', # Bitte anpassen!
-	'sales_invoice.html': 'Ausgangsrechnung', # Bitte anpassen!
-	'sales_order.html': 'Kundenauftrag' # Bitte anpassen!
+	"quotation.html": "Angebot",  # Bitte anpassen!
+	"sales_invoice.html": "Ausgangsrechnung",  # Bitte anpassen!
+	"sales_order.html": "Kundenauftrag",  # Bitte anpassen!
 }
 
+
 def update_css():
-	input_path = PRINT_STYLE_PATH + '.scss'
-	output_path = PRINT_STYLE_PATH + '.css'
-	run(['sass', '--style=compressed', input_path, output_path], check=True)
+	input_path = PRINT_STYLE_PATH + ".scss"
+	output_path = PRINT_STYLE_PATH + ".css"
+	run(["sass", "--style=compressed", input_path, output_path], check=True)
 	return output_path
 
 
-def main(username: str=None, password: str=None):
+def main(username: str = None, password: str = None):
 	while not username:
-		username = input('Username: ')
+		username = input("Username: ")
 
 	while not password:
 		password = getpass()
@@ -34,7 +35,7 @@ def main(username: str=None, password: str=None):
 		css = css_file.read()
 
 	client = FrappeClient(url=ERPNEXT_URL, username=username, password=password)
-	with os.scandir('print_format') as it:
+	with os.scandir("print_format") as it:
 		for entry in it:
 			html = None
 
@@ -44,13 +45,15 @@ def main(username: str=None, password: str=None):
 			with open(entry.path) as html_file:
 				html = html_file.read()
 
-			client.update({
-				'doctype': 'Print Format',
-				'name': PRINT_FORMATS.get(entry.name),
-				'html': html,
-				'css': css
-			})
+			client.update(
+				{
+					"doctype": "Print Format",
+					"name": PRINT_FORMATS.get(entry.name),
+					"html": html,
+					"css": css,
+				}
+			)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	typer.run(main)
