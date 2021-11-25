@@ -1,0 +1,134 @@
+<style>
+    .print-format {
+        margin-left: 0mm;
+        margin-right: 0mm;
+        margin-top: 10mm;
+        margin-bottom: 60mm;
+        font-size: 10pt;
+    }
+</style>
+
+{% set company_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fields=["parent"]) %}
+{% set cmp_addr = frappe.get_doc("Address", company_addresses[0]['parent']) %}
+{% set company = frappe.get_doc("Company", doc.company) %}
+{% set ship_addr = frappe.get_doc("Address", doc.shipping_address_name) %}
+
+<!-- HEAD -->
+<div id="header">
+    {% if company.company_logo %}
+        <img id="logo" src="{{ company.company_logo }}">
+    {% endif %}
+</div>
+
+<div class="contact-row">
+    <div id="address">
+        <div id="sender">
+            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
+                {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
+                {{ cmp_addr.pincode }} {{ cmp_addr.city }}
+                {% if cmp_addr.country != ship_addr.country -%}
+                    &#183; {{ cmp_addr.country | upper }}
+                {%- endif %}
+            </p>
+        </div>
+        {{ doc.customer_name }}<br />
+        {{ doc.shipping_address }}
+    </div>
+
+    <div id="contact">
+        <table class="text-small">
+            <tr>
+                <td>Tel.:</td>
+                <td class="text-right">{{ company.phone_no }}</td>
+            </tr>
+            <tr>
+                <td>E-Mail:</td>
+                <td class="text-right">{{ company.email }}</td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>Datum:</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.posting_date, "dd. MMMM yyyy") }}</td>
+            </tr>
+            {% if doc.po_no %}
+            <tr>
+                <td>Ihre Bestellnummer:</td>
+                <td class="text-right">{{ doc.po_no }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+<div id="faltmarke-1">-</div>
+<div id="lochmarke">-</div>
+<div id="faltmarke-2">-</div>
+
+<!-- CONTENT -->
+<div id="text">
+	<div id="subject">
+		<strong>Lieferschein {{ doc.name }}</strong>
+    </div>
+    <div class="salutation">
+        <p>Wir bedanken uns für die gute Zusammenarbeit und liefern Ihnen vereinbarungsgemäß folgende Waren:</p>
+    </div>
+    <br>
+    <br>
+	<table class="w-100 text-small">
+        <thead class="black-border">
+            <tr>
+                <th style="width: 10%">{{ _("Sr") }}</th>
+                <th style="width: 70%">
+                    {{ _("Description") }}</th>
+                <th style="width: 20%">{{ _("Qty") }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for n in doc.items %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    <b>{{ _(n.item_name) }}</b><br>
+                    {{ n.description | striptags }}<br>
+                    {% if n.against_sales_order %}
+                        Auftrag: {{ n.against_sales_order }}<br>
+                    {% endif %}
+                    {% if n.against_sales_invoice %}
+                        Rechnung: {{ n.against_sales_invoice }}<br>
+                    {% endif %}
+                    {% if n.batch_no %}
+                        Charge: {{ n.batch_no }}<br>
+                    {% endif %}
+                    {% if n.serial_no %}
+                        Seriennummern: {{ n.serial_no }}
+                    {% endif %}
+                </td>
+                <td>{{ n.get_formatted("qty") }} {{ _(n.uom) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+	</table>
+
+    <br>
+
+    <div class="epilogue">
+        {% if doc.terms %}
+            <div class="terms">
+                {{ doc.terms }}
+            </div>
+            <br>
+        {% endif %}
+
+    </div>
+    <br>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-html" class="visible-pdf">
+    <p id="pagenum">
+        {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+    </p>
+    <div class="print-format-footer">
+        {{ footer }}
+    </div>
+</div>
