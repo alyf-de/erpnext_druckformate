@@ -1,0 +1,145 @@
+<style>
+    .print-format {
+        margin-left: 0mm;
+        margin-right: 0mm;
+        margin-top: 10mm;
+        margin-bottom: 60mm;
+        font-size: 10pt;
+    }
+</style>
+
+{% set company_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fields=["parent"]) %}
+{% set cmp_addr = frappe.get_doc("Address", company_addresses[0]['parent']) %}
+{% set company = frappe.get_doc("Company", doc.company) %}
+{% set supplier_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Supplier", "link_name": doc.supplier, "parenttype": "Address"}, fields=["parent"]) %}
+{% set pay_addr = frappe.get_doc("Address", supplier_addresses[0]['parent']) %}
+
+<!-- HEAD -->
+<div id="header">
+    {% if company.company_logo %}
+        <img id="logo" src="{{company.company_logo}}">
+    {% endif %}
+</div>
+
+<div class="contact-row">
+    <div id="address">
+        <div id="sender">
+            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
+            {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }}<br>{% endif %}
+            {{ cmp_addr.pincode }} {{ cmp_addr.city }}
+            {% if cmp_addr.country != pay_addr.country -%}
+                    &#183; {{ cmp_addr.country | upper }}
+            {%- endif %}
+            </p>
+        </div>
+        {{ doc.vendor }}<br />
+        {{ pay_addr.get_display() }}
+    </div>
+
+    <div id="contact">
+        <table class="text-small">
+            <tr>
+                <td>{{ _("Phone") }}:</td>
+                <td class="text-right">{{ company.phone_no }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Email") }}:</td>
+                <td class="text-right">{{ company.email }}</td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <td>{{ _("Date") }}:</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="faltmarke-1"  class="din-mark"></div>
+<div id="lochmarke" class="din-mark"></div>
+<div id="faltmarke-2"  class="din-mark"></div>
+
+<!-- CONTENT -->
+<div id="text" class="">
+	<div id="subject">
+		<strong>{{ doc.name }}</strong>
+    </div>
+    <div class="salutation">
+    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+        <p>Sehr geehrte Damen und Herren,</p>
+        <br>
+        <p>bitte machen Sie uns ein Angebot über folgende Positionen:</p>
+        <br>
+    {% else %}
+        <p>Dear Sir or Madam,</p>
+        <br>
+        <p>Please send a quotation for the following items:</p>
+        <br>
+    {% endif %}
+    </div>
+    <br>
+    <br>
+    <table class="w-100 text-small">
+        <thead class="black-border">
+            <tr>
+                <th style="width: 10%">{{ _("Sr") }}</th>
+                <th style="width: 30%">{{ _("Description") }}</th>
+                <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
+                <th style="width: 10%">{{ _("Qty") }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for n in doc.items %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>
+                    <b>{{ _(n.item_name) }}</b>
+                    <br>
+                    {{ n.description | striptags }}
+                </td>
+                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                <td>
+                    {{ n.get_formatted("qty") }}
+                    {% if print_settings.print_uom_after_quantity %}
+                        {{ _(n.uom) }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+        <tfoot class="black-border"></tfoot>
+    </table>
+
+    <br>
+
+    <div class="epilogue">
+        {% if doc.terms %}
+            <div class="terms">
+                {{ doc.terms }}
+            </div>
+            <br>
+        {% endif %}
+
+        <div class="salutation">
+        {% if doc.message_for_supplier %}{{ doc.message_for_supplier }}{% endif %}
+
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+            <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
+        {% else %}
+            <p>This form was created automatically and is valid without a signature.</p>
+        {%- endif %}
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-html" class="visible-pdf">
+    <p id="pagenum">
+        {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+    </p>
+    <div class="print-format-footer">
+        {{ footer }}
+    </div>
+</div>

@@ -8,20 +8,16 @@
     }
 </style>
 
+{% set company_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fields=["parent"]) %}
+{% set cmp_addr = frappe.get_doc("Address", company_addresses[0]['parent']) %}
 {% set company = frappe.get_doc("Company", doc.company) %}
-{% set company_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fieldname="parent") %}
-{% set cmp_addr = frappe.get_doc("Address", company_address_name) if company_address_name else None %}
-{% set pay_addr = frappe.get_doc("Address", doc.customer_address) %}
-
-{% if doc.contact_person %}
-    {% set contact = frappe.get_doc("Contact", doc.contact_person) %}
-{% endif %}
+{% set pay_addr = frappe.get_doc("Address", doc.supplier_address) %}
 
 <!-- HEAD -->
 <div id="header">
-    <div class="letter-head">
-        {{ letter_head }}
-    </div>
+    {% if company.company_logo %}
+        <img id="logo" src="{{company.company_logo}}">
+    {% endif %}
 </div>
 
 <div class="contact-row">
@@ -35,19 +31,12 @@
             {%- endif %}
             </p>
         </div>
-        {{ doc.customer_name }}<br />
-        {% if contact %}
-                {%- if contact.salutation -%}
-                    {{ contact.salutation }}
-                {%- endif %}
-                {%- if contact.salutation in ["Hr.", "Herr"] %}n{% endif %}
-                {{ contact.first_name }} {{ contact.last_name }}<br>
-        {% endif %}
+        {{ doc.supplier }}<br />
         {{ doc.address_display }}
     </div>
 
     <div id="contact">
-        <table>
+        <table class="text-small">
             <tr>
                 <td>{{ _("Phone") }}:</td>
                 <td class="text-right">{{ company.phone_no }}</td>
@@ -61,20 +50,6 @@
                 <td>{{ _("Date") }}:</td>
                 <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
             </tr>
-            <!--<tr>
-                <td>{{ _("Delivery Date") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.delivery_date, "dd. MMMM yyyy") }}</td>
-            </tr>-->
-            <tr>
-                <td>{{ _("Our Sign") }}:</td>
-                <td class="text-right">{{ doc.name }}</td>
-            </tr>
-            {% if doc.po_no %}
-            <tr>
-                <td>{{ _("Your Sign") }}:</td>
-                <td class="text-right">{{ doc.po_no }}</td>
-            </tr>
-            {% endif %}
         </table>
     </div>
 </div>
@@ -86,36 +61,27 @@
 <!-- CONTENT -->
 <div id="text" class="">
 	<div id="subject">
-		<strong>{{ _(doc.doctype) }}: {{ doc.name }}</strong>
+		<strong>{{ doc.name }}</strong>
     </div>
-    <!-- {# if frappe.form_dict.get("_lang") == "de" #} -->
     <div class="salutation">
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
-            {% if not contact %}
-                <p>Sehr geehrte Damen und Herren,</p>
-            {% else %}
-                <p>Sehr geehrte{% if contact.salutation in ["Hr.", "Herr"] %}r{% endif %} {{ contact.salutation }} {{ contact.last_name }},<p>
-            {% endif %}
-            <br>
-            <p>hiermit bestätigen wir Ihren Auftrag über die folgenden Positionen:</p>
-        {% else %}
-            {% if not contact %}
-                <p>Dear Sir or Madam,</p>
-            {% else %}
-                <p>Dear {{ contact.salutation }} {{ contact.last_name }},<p>
-            {% endif %}
-            <br>
-            <p>we are pleased to confirm your order of the following items:</p>
-        {% endif %}
+    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+        <p>Sehr geehrte Damen und Herren,</p>
+        <br>
+        <p>wir bestellen hiermit:</p>
+    {% else %}
+        <p>Dear Sir or Madam,</p>
+        <br>
+        <p>we hereby order:</p>
+    {% endif %}
+
     </div>
-
     <br>
-
+    <br>
     <table class="w-100 text-small">
         <thead class="black-border">
             <tr>
-                <th style="width: 5%">{{ _("Sr") }}</th>
-                <th style="width: 45%">{{ _("Description") }}</th>
+                <th style="width: 10%">{{ _("Sr") }}</th>
+                <th style="width: 30%">{{ _("Description") }}</th>
                 <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
                 <th style="width: 15%">{{ _("Price") }}</th>
@@ -128,12 +94,10 @@
             {% for n in doc.items %}
             <tr>
                 <td>{{ loop.index }}</td>
-                <td><b>{{ _(n.item_name) }}</b><br>
-                    {{ n.description }}
-                    {% if n.prevdoc_docname %}
-                    <!-- Angebot: A-2020-001 -->
-                    ({{ _("Quotation") }}: {{ n.prevdoc_docname }})
-                    {% endif %}
+                <td>
+                    <b>{{ _(n.item_name) }}</b>
+                    <br>
+                    {{ n.description | striptags }}
                 </td>
                 <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
                 <td>
@@ -204,7 +168,7 @@
                                 {{ tax_row.get_formatted("tax_amount") }}
                             </td>
                         </tr>
-                  {% endif %}
+                    {% endif %}
                 {%- endfor %}
             {%- endif %}
             <tr>
@@ -219,25 +183,24 @@
                     <strong>{{ doc.get_formatted("grand_total") }}</strong>
                 </td>
             </tr>
-            {% if doc.advance_paid %}
-                <tr>
-                    <td></td>
-                    <td>
-                    {{ _("Total Advance") }}
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="text-right">
-                        {{ doc.get_formatted("advance_paid") }}
-                    </td>
-                </tr>
-            {% endif %}
         </tfoot>
     </table>
 
     <br>
-
+    <div>
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+            <br>
+            <p><strong>Lieferadresse:</strong><br>{{ doc.shipping_address_display }}</p>
+            <br>
+            <p><strong>Bitte liefern Sie bis zum:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        {% else %}
+            <br>
+            <p><strong>Shipping Address:</strong><br>{{ doc.shipping_address_display }}</p>
+            <br>
+            <p><strong>Please deliver by:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        {% endif %}
+    </div>
+    <br>
     <div class="epilogue">
         {% if doc.terms %}
             <div class="terms">
@@ -245,21 +208,13 @@
             </div>
             <br>
         {% endif %}
-        {% if doc.language == "de" -%}
-            <p>Vielen Dank für Ihren Auftrag. Für Anmerkungen oder Fragen stehen wir gerne zur Verfügung.</p>
-            <br>
-            <div class="salutation">
-                <p>Beste Grüße nach {{ pay_addr.city }}</p>
-                <p>Ihr Team der {{ company.company_name }}</p>
-            </div>
+        <div class="salutation">
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+            <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
         {% else %}
-            <p>Thank you for your order. If you have any comments or questions, please do not hesitate to contact us.</p>
-            <br>
-            <div class="salutation">
-                <p>Best regards,</p>
-                <p>Your team at {{ company.company_name }}</p>
-            </div>
+            <p>This form was created automatically and is valid without a signature.</p>
         {%- endif %}
+        </div>
     </div>
 </div>
 
