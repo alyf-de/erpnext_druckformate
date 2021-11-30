@@ -38,25 +38,25 @@
     <div id="contact">
         <table class="text-small">
             <tr>
-                <td>Tel.:</td>
+                <td>{{ _("Phone") }}:</td>
                 <td class="text-right">{{ company.phone_no }}</td>
             </tr>
             <tr>
-                <td>E-Mail:</td>
+                <td>{{ _("Email") }}:</td>
                 <td class="text-right">{{ company.email }}</td>
             </tr>
             <tr></tr>
             <tr>
-                <td>Datum:</td>
+                <td>{{ _("Date") }}:</td>
                 <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
             </tr>
         </table>
     </div>
 </div>
 
-<div id="faltmarke-1">-</div>
-<div id="lochmarke">-</div>
-<div id="faltmarke-2">-</div>
+<div id="faltmarke-1" class="din-mark"></div>
+<div id="lochmarke" class="din-mark"></div>
+<div id="faltmarke-2" class="din-mark"></div>
 
 <!-- CONTENT -->
 <div id="text" class="">
@@ -64,13 +64,16 @@
 		<strong>{{ doc.name }}</strong>
     </div>
     <div class="salutation">
+    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
         <p>Sehr geehrte Damen und Herren,</p>
         <br>
         <p>wir bestellen hiermit:</p>
+    {% else %}
+        <p>Dear Sir or Madam,</p>
         <br>
-        <p><strong>Lieferadresse:</strong><br>{{ doc.shipping_address_display }}</p>
-        <br>
-        <p><strong>Bitte liefern Sie bis zum:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        <p>we hereby order:</p>
+    {% endif %}
+
     </div>
     <br>
     <br>
@@ -79,7 +82,7 @@
             <tr>
                 <th style="width: 10%">{{ _("Sr") }}</th>
                 <th style="width: 30%">{{ _("Description") }}</th>
-                <th style="width: 10%">{{ _("Unit") }}</th>
+                <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
                 <th style="width: 15%">{{ _("Price") }}</th>
                 <!-- <th style="width: 15%">{{ _("Discount") }}</th> -->
@@ -96,8 +99,13 @@
                     <br>
                     {{ n.description | striptags }}
                 </td>
-                <td>{{ _(n.uom) }}</td>
-                <td>{{ n.get_formatted("qty") }}</td>
+                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                <td>
+                    {{ n.get_formatted("qty") }}
+                    {% if print_settings.print_uom_after_quantity %}
+                        {{ _(n.uom) }}
+                    {% endif %}
+                </td>
                 <td>{{ n.get_formatted("rate") }}</td>
                 <!-- <td>{{ n.get_formatted("discount_amount") }}</td> -->
                 <td class="text-right">{{ n.get_formatted("amount") }}</td>
@@ -147,18 +155,20 @@
                 </tr>
             {% else %}
                 {% for tax_row in doc.taxes -%}
-                    <tr>
-                        <td></td>
-                        <td>
-                        {{ tax_row.description }}
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td class="text-right">
-                            {{ tax_row.get_formatted("tax_amount") }}
-                        </td>
-                    </tr>
+                    {% if tax_row.tax_amount or print_settings.print_taxes_with_zero_amount %}
+                        <tr>
+                            <td></td>
+                            <td>
+                            {{ tax_row.description }}
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-right">
+                                {{ tax_row.get_formatted("tax_amount") }}
+                            </td>
+                        </tr>
+                    {% endif %}
                 {%- endfor %}
             {%- endif %}
             <tr>
@@ -177,7 +187,20 @@
     </table>
 
     <br>
-
+    <div>
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+            <br>
+            <p><strong>Lieferadresse:</strong><br>{{ doc.shipping_address_display }}</p>
+            <br>
+            <p><strong>Bitte liefern Sie bis zum:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        {% else %}
+            <br>
+            <p><strong>Shipping Address:</strong><br>{{ doc.shipping_address_display }}</p>
+            <br>
+            <p><strong>Please deliver by:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        {% endif %}
+    </div>
+    <br>
     <div class="epilogue">
         {% if doc.terms %}
             <div class="terms">
@@ -186,7 +209,11 @@
             <br>
         {% endif %}
         <div class="salutation">
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
             <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
+        {% else %}
+            <p>This form was created automatically and is valid without a signature.</p>
+        {%- endif %}
         </div>
     </div>
 </div>

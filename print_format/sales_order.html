@@ -8,9 +8,9 @@
     }
 </style>
 
-{% set company_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fields=["parent"]) %}
-{% set cmp_addr = frappe.get_doc("Address", company_addresses[0]['parent']) %}
 {% set company = frappe.get_doc("Company", doc.company) %}
+{% set company_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fieldname="parent") %}
+{% set cmp_addr = frappe.get_doc("Address", company_address_name) if company_address_name else None %}
 {% set pay_addr = frappe.get_doc("Address", doc.customer_address) %}
 
 {% if doc.contact_person %}
@@ -40,7 +40,7 @@
                 {%- if contact.salutation -%}
                     {{ contact.salutation }}
                 {%- endif %}
-                {%- if contact.salutation in ["Hr.", "Herr"] %}n{% endif %} 
+                {%- if contact.salutation in ["Hr.", "Herr"] %}n{% endif %}
                 {{ contact.first_name }} {{ contact.last_name }}<br>
         {% endif %}
         {{ doc.address_display }}
@@ -50,11 +50,11 @@
         <table>
             <tr>
                 <td>{{ _("Phone") }}:</td>
-                <td class="text-right">+49 30 112358</td>
+                <td class="text-right">{{ company.phone_no }}</td>
             </tr>
             <tr>
                 <td>{{ _("Email") }}:</td>
-                <td class="text-right">mail@example.org</td>
+                <td class="text-right">{{ company.email }}</td>
             </tr>
             <tr></tr>
             <tr>
@@ -116,7 +116,7 @@
             <tr>
                 <th style="width: 5%">{{ _("Sr") }}</th>
                 <th style="width: 45%">{{ _("Description") }}</th>
-                <th style="width: 10%">{{ _("Unit") }}</th>
+                <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
                 <th style="width: 15%">{{ _("Price") }}</th>
                 <!-- <th style="width: 15%">{{ _("Discount") }}</th> -->
@@ -135,8 +135,13 @@
                     ({{ _("Quotation") }}: {{ n.prevdoc_docname }})
                     {% endif %}
                 </td>
-                <td>{{ _(n.uom) }}</td>
-                <td>{{ n.get_formatted("qty") }}</td>
+                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                <td>
+                    {{ n.get_formatted("qty") }}
+                    {% if print_settings.print_uom_after_quantity %}
+                        {{ _(n.uom) }}
+                    {% endif %}
+                </td>
                 <td>{{ n.get_formatted("rate") }}</td>
                 <!-- <td>{{ n.get_formatted("discount_amount") }}</td> -->
                 <td class="text-right">{{ n.get_formatted("amount") }}</td>
@@ -241,14 +246,14 @@
             <br>
         {% endif %}
         {% if doc.language == "de" -%}
-            <p>Wir möchten uns bei Ihnen dafür bedanken, dass Sie uns Ihr Projekt anvertraut haben. Wir schätzen dies sehr und möchten, dass Sie wissen, dass wir jederzeit für Sie da sind. Für jegliche Anmerkungen oder Fragen stehen wir gerne bereit.</p>
+            <p>Vielen Dank für Ihren Auftrag. Für Anmerkungen oder Fragen stehen wir gerne zur Verfügung.</p>
             <br>
             <div class="salutation">
                 <p>Beste Grüße nach {{ pay_addr.city }}</p>
                 <p>Ihr Team der {{ company.company_name }}</p>
             </div>
         {% else %}
-            <p>We'd like to thank you for trusting us with your project, we appreciate it and we want you to know that we are at your service whenever you need.  If you have any feedback in regards to anything at all, please let us know.</p>
+            <p>Thank you for your order. If you have any comments or questions, please do not hesitate to contact us.</p>
             <br>
             <div class="salutation">
                 <p>Best regards,</p>

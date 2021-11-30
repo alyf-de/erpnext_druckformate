@@ -39,25 +39,25 @@
     <div id="contact">
         <table class="text-small">
             <tr>
-                <td>Tel.:</td>
+                <td>{{ _("Phone") }}:</td>
                 <td class="text-right">{{ company.phone_no }}</td>
             </tr>
             <tr>
-                <td>E-Mail:</td>
+                <td>{{ _("Email") }}:</td>
                 <td class="text-right">{{ company.email }}</td>
             </tr>
             <tr></tr>
             <tr>
-                <td>Datum:</td>
+                <td>{{ _("Date") }}:</td>
                 <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
             </tr>
         </table>
     </div>
 </div>
 
-<div id="faltmarke-1">-</div>
-<div id="lochmarke">-</div>
-<div id="faltmarke-2">-</div>
+<div id="faltmarke-1"  class="din-mark"></div>
+<div id="lochmarke" class="din-mark"></div>
+<div id="faltmarke-2"  class="din-mark"></div>
 
 <!-- CONTENT -->
 <div id="text" class="">
@@ -65,13 +65,17 @@
 		<strong>{{ doc.name }}</strong>
     </div>
     <div class="salutation">
+    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
         <p>Sehr geehrte Damen und Herren,</p>
         <br>
-        <p>wir bestellen hiermit:</p>
+        <p>bitte machen Sie uns ein Angebot über folgende Positionen:</p>
         <br>
-        <p><strong>Lieferadresse:</strong><br>{{ pay_addr.get_display() }}</p>
+    {% else %}
+        <p>Dear Sir or Madam,</p>
         <br>
-
+        <p>Please send a quotation for the following items:</p>
+        <br>
+    {% endif %}
     </div>
     <br>
     <br>
@@ -80,7 +84,7 @@
             <tr>
                 <th style="width: 10%">{{ _("Sr") }}</th>
                 <th style="width: 30%">{{ _("Description") }}</th>
-                <th style="width: 10%">{{ _("Unit") }}</th>
+                <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
             </tr>
         </thead>
@@ -94,8 +98,13 @@
                     <br>
                     {{ n.description | striptags }}
                 </td>
-                <td>{{ _(n.uom) }}</td>
-                <td>{{ n.get_formatted("qty") }}</td>
+                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                <td>
+                    {{ n.get_formatted("qty") }}
+                    {% if print_settings.print_uom_after_quantity %}
+                        {{ _(n.uom) }}
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -112,8 +121,15 @@
             </div>
             <br>
         {% endif %}
+
         <div class="salutation">
+        {% if doc.message_for_supplier %}{{ doc.message_for_supplier }}{% endif %}
+
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
             <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
+        {% else %}
+            <p>This form was created automatically and is valid without a signature.</p>
+        {%- endif %}
         </div>
     </div>
 </div>
