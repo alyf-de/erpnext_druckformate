@@ -1,6 +1,6 @@
 # ERPNext-Druckformate nach DIN 5008
 
-> Für ERPNext v12
+> Für ERPNext `version-12` und `version-13`
 
 * `letter_head.html`: HTML und CSS für die Fußzeile.
 * `print_style/print_style.scss`: Einheitliches CSS für alle Druckformate.
@@ -18,22 +18,25 @@ sass --style=compressed print_style/print_style.scss print_style/print_style.css
 
 ## Einrichtung
 
-1. Neuen HTML-basierten **Letter Head** erstellen und den Inhalt von `letter_head.html` in das Feld "Footer HTML" kopieren.
+1. Neuen **Letter Head** (dt. Briefkopf) erstellen
 
-    ![Letter Head](docs/letter_head.png)
+    1. Den Inhalt von `letter_head.html` in das Feld "Footer HTML" kopieren.
 
-2. **Company** öffnen und
+        ![Letter Head](docs/letter_head.png)
+
+    2. Einen Briefkopf als Bild oder HTML hinterlegen
+
+2. **Company** (dt. Unternehmen) öffnen und
 
    1. Den im vorigen Schritt erstellten **Letter Head** als "Default Letter Head" hinterlegen.
-   2. Das Unternehmenslogo als "Profilbild" oben links hinzufügen. Dieses wird anstelle der Kopfzeile als Logo im Druckformat verwendet.
-   3. Eine Adresse für das Unternehmen hinzufügen. Diese erscheint im Druckformat als Absender.
+   2. Eine Adresse für das Unternehmen hinzufügen. Diese erscheint im Druckformat als Absender.
 
 3. **Address Templates** für die Zielländer anlegen.
-4. **Print Format** für **Quotation**, **Sales Invoice** und **Sales Order** anlegen. Hierzu den Inhalt der jeweiligen Datei aus dem Order `print_format` und das CSS aus `print_style/print_style.css` kopieren.
+4. **Print Format** (dt. Druckformat) für **Quotation** (dt. Angebot), **Sales Invoice** (dt. Verkaufsrechnung) und **Sales Order** (dt. Auftrag) anlegen. Hierzu den Inhalt der jeweiligen Datei aus dem Order `print_format` und das CSS aus `print_style/print_style.css` kopieren.
 
     ![Print Format](docs/print_format.png)
 
-5. Über **Customize Form** das "Default Print Format" für den jeweiligen DocType hinterlegen
+5. Über **Customize Form** (dt. Formular anpassen) das "Default Print Format" für den jeweiligen DocType hinterlegen
 
 
 ## Anpassung und Entwicklung
@@ -78,7 +81,41 @@ Sätze und längere Texte können per if-Statement übersetzt werden:
 
 ## Aktualisieren
 
-Das Skript `update.py` kann genutzt werden, um automatisch alle Druckformate in ERPNext zu aktualisieren. Die Konstanten `ERPNEXT_URL` und `PRINT_FORMATS` müssen entsprechend des Zielsystems angepasst werden.
+Das Skript `update.py` kann genutzt werden, um automatisch alle Druckformate in ERPNext zu aktualisieren.
+
+### Einrichtung
+
+```bash
+mkdir env
+python3 -m venv env/
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+Die Konstanten `ERPNEXT_URL` und `PRINT_FORMATS` in `update.py` müssen vor der Verwendung entsprechend des Zielsystems angepasst werden.
+
+### Verwendung
+
+```
+Usage: update.py [OPTIONS]
+
+Options:
+  --username TEXT
+  --password TEXT
+  --install-completion [bash|zsh|fish|powershell|pwsh]
+                                  Install completion for the specified shell.
+  --show-completion [bash|zsh|fish|powershell|pwsh]
+                                  Show completion for the specified shell, to
+                                  copy it or customize the installation.
+  --help                          Show this message and exit.
+```
+
+Beispiel:
+
+```bash
+source env/bin/activate
+python update.py --username "Administrator" --password "P@ssw0rd"
+```
 
 ## Unterstützung erhalten
 
