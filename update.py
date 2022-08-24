@@ -1,23 +1,28 @@
 import os
+import pathlib
 from getpass import getpass
 from subprocess import run
 
 import typer
 from frappeclient import FrappeClient
 
-ERPNEXT_URL = "https://erp.alyf.cloud"  # Bitte anpassen!
+ERPNEXT_URL = "https://erp.alyf.cloud"  # TODO: eigene URL eintragen
 PRINT_STYLE_PATH = "print_style/print_style"
 PRINT_FORMATS = {
 	# 'Dateiname': 'Name des Print Format in ERPNext'
-	"quotation.html": "Angebot",  # Bitte anpassen!
-	"sales_invoice.html": "Ausgangsrechnung",  # Bitte anpassen!
-	"sales_order.html": "Kundenauftrag",  # Bitte anpassen!
+	# TODO: die verwendeten Namen anpassen oder auskommentieren
+	"quotation.html": "Angebot",
+	"sales_order.html": "Kundenauftrag",
+	"sales_invoice.html": "Ausgangsrechnung",
+	"delivery_note.html": "Lieferschein",
+	"purchase_order.html": "Bestellung",
+	"request_for_quotation.html": "Angebotsanfrage",
 }
 
 
 def update_css():
-	input_path = PRINT_STYLE_PATH + ".scss"
-	output_path = PRINT_STYLE_PATH + ".css"
+	input_path = f"{PRINT_STYLE_PATH}.scss"
+	output_path = f"{PRINT_STYLE_PATH}.css"
 	run(["sass", "--style=compressed", input_path, output_path], check=True)
 	return output_path
 
@@ -31,9 +36,7 @@ def main(username: str = None, password: str = None):
 
 	css = None
 	css_path = update_css()
-	with open(css_path) as css_file:
-		css = css_file.read()
-
+	css = pathlib.Path(css_path).read_text()
 	client = FrappeClient(url=ERPNEXT_URL, username=username, password=password)
 	with os.scandir("print_format") as it:
 		for entry in it:
@@ -42,9 +45,7 @@ def main(username: str = None, password: str = None):
 			if entry.name not in PRINT_FORMATS:
 				continue
 
-			with open(entry.path) as html_file:
-				html = html_file.read()
-
+			html = pathlib.Path(entry.path).read_text()
 			client.update(
 				{
 					"doctype": "Print Format",

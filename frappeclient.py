@@ -89,8 +89,8 @@ class FrappeClient(object):
 			raise AuthError
 
 	def authenticate(self, api_key, api_secret):
-		token = b64encode("{}:{}".format(api_key, api_secret))
-		auth_header = {"Authorization": "Basic {}".format(token)}
+		token = b64encode(f"{api_key}:{api_secret}")
+		auth_header = {"Authorization": f"Basic {token}"}
 		self.session.headers.update(auth_header)
 
 	def logout(self):
@@ -125,7 +125,7 @@ class FrappeClient(object):
 			params["order_by"] = order_by
 
 		res = self.session.get(
-			self.url + "/api/resource/" + doctype,
+			f"{self.url}/api/resource/{doctype}",
 			params=params,
 			verify=self.verify,
 			headers=self.headers,
@@ -137,18 +137,11 @@ class FrappeClient(object):
 
 		:param doc: A dict or Document object to be inserted remotely"""
 		res = self.session.post(
-			self.url + "/api/resource/" + quote(doc.get("doctype")),
+			f"{self.url}/api/resource/{quote(doc.get('doctype'))}",
 			data={"data": json.dumps(doc)},
 		)
+
 		return self.post_process(res)
-
-	def insert_many(self, docs):
-		"""Insert multiple documents to the remote server
-
-		:param docs: List of dict or Document objects to be inserted in one request"""
-		return self.post_request(
-			{"cmd": "frappe.client.insert_many", "docs": frappe.as_json(docs)}
-		)
 
 	def update(self, doc):
 		"""Update a remote document
@@ -229,7 +222,7 @@ class FrappeClient(object):
 			params["fields"] = json.dumps(fields)
 
 		res = self.session.get(
-			self.url + "/api/resource/" + doctype + "/" + name, params=params
+			f"{self.url}/api/resource/{doctype}/{name}", params=params
 		)
 
 		return self.post_process(res)
@@ -256,7 +249,7 @@ class FrappeClient(object):
 			"no_letterhead": int(not bool(letterhead)),
 		}
 		response = self.session.get(
-			self.url + "/api/method/frappe.templates.pages.print.download_pdf",
+			f"{self.url}/api/method/frappe.templates.pages.print.download_pdf",
 			params=params,
 			stream=True,
 		)
@@ -270,7 +263,7 @@ class FrappeClient(object):
 			"format": print_format,
 			"no_letterhead": int(not bool(letterhead)),
 		}
-		response = self.session.get(self.url + "/print", params=params, stream=True)
+		response = self.session.get(f"{self.url}/print", params=params, stream=True)
 		return self.post_process_file_stream(response)
 
 	def __load_downloadable_templates(self):
@@ -299,23 +292,21 @@ class FrappeClient(object):
 		)
 		return self.post_process_file_stream(request)
 
-	def get_api(self, method, params={}):
-		res = self.session.get(self.url + "/api/method/" + method + "/", params=params)
+	def get_api(self, method, params=None):
+		res = self.session.get(f"{self.url}/api/method/{method}/", params=params)
 		return self.post_process(res)
 
-	def post_api(self, method, params={}):
-		res = self.session.post(self.url + "/api/method/" + method + "/", params=params)
+	def post_api(self, method, params=None):
+		res = self.session.post(f"{self.url}/api/method/{method}/", params=params)
 		return self.post_process(res)
 
 	def get_request(self, params):
 		res = self.session.get(self.url, params=self.preprocess(params))
-		res = self.post_process(res)
-		return res
+		return self.post_process(res)
 
 	def post_request(self, data):
 		res = self.session.post(self.url, data=self.preprocess(data))
-		res = self.post_process(res)
-		return res
+		return self.post_process(res)
 
 	def preprocess(self, params):
 		"""convert dicts, lists to json"""
