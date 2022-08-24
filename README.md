@@ -1,6 +1,6 @@
 # ERPNext-Druckformate nach DIN 5008
 
-> Für ERPNext `version-12` und `version-13`
+> Entwickelt und getestet für ERPNext `version-13`. (Kann mit kleinen Anpassungen auch für andere Versionen verwendet werden.)
 
 * `letter_head.html`: HTML und CSS für die Fußzeile.
 * `print_style/print_style.scss`: Einheitliches CSS für alle Druckformate.
