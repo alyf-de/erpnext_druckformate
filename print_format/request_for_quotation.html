@@ -8,11 +8,12 @@
     }
 </style>
 
-{% set company_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fields=["parent"]) %}
-{% set cmp_addr = frappe.get_doc("Address", company_addresses[0]['parent']) %}
+{% set company_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fieldname="parent") %}
+{% set cmp_addr = frappe.get_doc("Address", company_address_name) %}
 {% set company = frappe.get_doc("Company", doc.company) %}
-{% set supplier_addresses = frappe.get_list("Dynamic Link", filters={"link_doctype": "Supplier", "link_name": doc.supplier, "parenttype": "Address"}, fields=["parent"]) %}
-{% set pay_addr = frappe.get_doc("Address", supplier_addresses[0]['parent']) %}
+
+{% set supplier_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Supplier", "link_name": doc.supplier, "parenttype": "Address"}, fieldname="parent") %}
+{% set pay_addr = frappe.get_doc("Address", supplier_address_name) %}
 
 <!-- HEAD -->
 <div id="header">
