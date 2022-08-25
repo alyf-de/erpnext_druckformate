@@ -48,15 +48,19 @@
 
     <div id="contact">
         <table>
+            {% if company.phone_no %}
             <tr>
                 <td>{{ _("Phone") }}:</td>
                 <td class="text-right">{{ company.phone_no }}</td>
             </tr>
+            {% endif %}
+
+            {% if company.email %}
             <tr>
                 <td>{{ _("Email") }}:</td>
                 <td class="text-right">{{ company.email }}</td>
             </tr>
-            <tr></tr>
+            {% endif %}
             <tr>
                 <td>{{ _("Date") }}:</td>
                 <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
