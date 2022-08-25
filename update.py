@@ -23,6 +23,7 @@ PRINT_FORMATS = {
 def update_css():
 	input_path = f"{PRINT_STYLE_PATH}.scss"
 	output_path = f"{PRINT_STYLE_PATH}.css"
+	print(f"Building CSS {input_path} -> {output_path}")
 	run(["sass", "--style=compressed", input_path, output_path], check=True)
 	return output_path
 
@@ -46,10 +47,12 @@ def main(username: str = None, password: str = None):
 				continue
 
 			html = pathlib.Path(entry.path).read_text()
+			print_format_name = PRINT_FORMATS.get(entry.name)
+			print(f"Syncing {entry.name} -> Print Format '{print_format_name}'")
 			client.update(
 				{
 					"doctype": "Print Format",
-					"name": PRINT_FORMATS.get(entry.name),
+					"name": print_format_name,
 					"html": html,
 					"css": css,
 				}
