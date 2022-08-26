@@ -12,7 +12,7 @@ PRINT_FORMATS = {
 	# 'Dateiname': 'Name des Print Format in ERPNext'
 	# TODO: die verwendeten Namen anpassen oder auskommentieren
 	"quotation.html": "Angebot",
-	"sales_order.html": "Kundenauftrag",
+	"sales_order.html": "Auftragsbestätigung",
 	"sales_invoice.html": "Ausgangsrechnung",
 	"delivery_note.html": "Lieferschein",
 	"purchase_order.html": "Bestellung",
