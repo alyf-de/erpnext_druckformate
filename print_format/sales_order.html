@@ -249,7 +249,7 @@
             </div>
             <br>
         {% endif %}
-        {% if doc.language == "de" -%}
+        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
             <p>Vielen Dank für Ihren Auftrag. Für Anmerkungen oder Fragen stehen wir gerne zur Verfügung.</p>
             <br>
             <div class="salutation">
