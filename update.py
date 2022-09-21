@@ -6,17 +6,17 @@ from subprocess import run
 import typer
 from frappeclient import FrappeClient
 
-ERPNEXT_URL = "https://erp.alyf.cloud"  # TODO: eigene URL eintragen
+ERPNEXT_URL = "https://master.alyf.cloud"  # TODO: eigene URL eintragen
 PRINT_STYLE_PATH = "print_style/print_style"
 PRINT_FORMATS = {
 	# 'Dateiname': 'Name des Print Format in ERPNext'
 	# TODO: die verwendeten Namen anpassen oder auskommentieren
-	"quotation.html": "Angebot",
-	"sales_order.html": "Auftragsbestätigung",
-	"sales_invoice.html": "Ausgangsrechnung",
-	"delivery_note.html": "Lieferschein",
-	"purchase_order.html": "Bestellung",
-	"request_for_quotation.html": "Angebotsanfrage",
+	"quotation.jinja": "Angebot",
+	"sales_order.jinja": "Auftragsbestätigung",
+	"sales_invoice.jinja": "Ausgangsrechnung",
+	"delivery_note.jinja": "Lieferschein",
+	"purchase_order.jinja": "Bestellung",
+	"request_for_quotation.jinja": "Angebotsanfrage",
 }
 
 

@@ -4,7 +4,7 @@
 
 * `letter_head.html`: HTML und CSS für die Fußzeile.
 * `print_style/print_style.scss`: Einheitliches CSS für alle Druckformate.
-* `print_format/*.html`: HTML für den jeweiligen DocType.
+* `print_format/*.jinja`: Jinja HTML-Template für den jeweiligen DocType.
 
 ## Abhängigkeiten
 
@@ -20,7 +20,7 @@ sass --style=compressed print_style/print_style.scss print_style/print_style.css
 
 1. Neuen **Letter Head** (dt. Briefkopf) erstellen
 
-    1. Den Inhalt von `letter_head.html` in das Feld "Footer HTML" kopieren.
+    1. Den Inhalt von `letter_head.jinja` in das Feld "Footer HTML" kopieren.
 
         ![Letter Head](docs/letter_head.png)
 
