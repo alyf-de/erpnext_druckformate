@@ -206,7 +206,7 @@
     </div>
     <br>
     <div class="epilogue">
-        {% if doc.terms %}
+        {% if (doc.terms | striptags) %}
             <div class="terms">
                 {{ doc.terms }}
             </div>
