@@ -63,11 +63,11 @@
             {% endif %}
             <tr>
                 <td>{{ _("Date") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "dd. MMMM yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "long") }}</td>
             </tr>
             <tr>
                 <td>{{ _("Valid Till") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.valid_till, "dd. MMMM yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.valid_till, "long") }}</td>
             </tr>
             <tr>
                 <td>{{ _("Our Sign") }}:</td>

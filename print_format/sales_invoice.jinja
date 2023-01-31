@@ -63,11 +63,11 @@
             {% endif %}
             <tr>
                 <td>{{ _("Date") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.posting_date, "dd. MMMM yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.posting_date, "long") }}</td>
             </tr>
             <tr>
                 <td>{{ _("Payment Due Date") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.due_date, "dd. MMMM yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.due_date, "long") }}</td>
             </tr>
             <tr>
                 <td>{{ _("Our Sign") }}:</td>

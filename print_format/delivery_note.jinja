@@ -52,7 +52,7 @@
             {% endif %}
             <tr>
                 <td>{{ _("Date") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.posting_date, "dd. MMMM yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.posting_date, "long") }}</td>
             </tr>
             {% if doc.po_no %}
             <tr>
