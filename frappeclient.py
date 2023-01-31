@@ -113,9 +113,7 @@ class FrappeClient(object):
 		"""Returns list of records of a particular type"""
 		if not isinstance(fields, str):
 			fields = json.dumps(fields)
-		params = {
-			"fields": fields,
-		}
+		params = {"fields": fields}
 		if filters:
 			params["filters"] = json.dumps(filters)
 		if limit_page_length:
@@ -123,13 +121,13 @@ class FrappeClient(object):
 			params["limit_page_length"] = limit_page_length
 		if order_by:
 			params["order_by"] = order_by
-
 		res = self.session.get(
 			f"{self.url}/api/resource/{doctype}",
 			params=params,
 			verify=self.verify,
 			headers=self.headers,
 		)
+
 		return self.post_process(res)
 
 	def insert(self, doc):
@@ -137,23 +135,23 @@ class FrappeClient(object):
 
 		:param doc: A dict or Document object to be inserted remotely"""
 		res = self.session.post(
-			f"{self.url}/api/resource/{quote(doc.get('doctype'))}",
+			f"{self.url}/api/resource/" + quote(doc.get("doctype")),
 			data={"data": json.dumps(doc)},
 		)
 
 		return self.post_process(res)
 
+	def insert_many(self, docs):
+		"""Insert multiple documents to the remote server
+
+		:param docs: List of dict or Document objects to be inserted in one request"""
+		return self.post_request({"cmd": "frappe.client.insert_many", "docs": docs})
+
 	def update(self, doc):
 		"""Update a remote document
 
 		:param doc: dict or Document object to be updated remotely. `name` is mandatory for this"""
-		url = (
-			self.url
-			+ "/api/resource/"
-			+ quote(doc.get("doctype"))
-			+ "/"
-			+ quote(doc.get("name"))
-		)
+		url = f"{self.url}/api/resource/{quote(doc.get('doctype'))}/{quote(doc.get('name'))}"
 		res = self.session.put(url, data={"data": json.dumps(doc)})
 		return self.post_process(res)
 
@@ -242,28 +240,30 @@ class FrappeClient(object):
 		return self.post_request(params)
 
 	def get_pdf(self, doctype, name, print_format="Standard", letterhead=True):
-		params = {
-			"doctype": doctype,
-			"name": name,
-			"format": print_format,
-			"no_letterhead": int(not bool(letterhead)),
-		}
 		response = self.session.get(
 			f"{self.url}/api/method/frappe.templates.pages.print.download_pdf",
-			params=params,
+			params={
+				"doctype": doctype,
+				"name": name,
+				"format": print_format,
+				"no_letterhead": int(not bool(letterhead)),
+			},
 			stream=True,
 		)
 
 		return self.post_process_file_stream(response)
 
 	def get_html(self, doctype, name, print_format="Standard", letterhead=True):
-		params = {
-			"doctype": doctype,
-			"name": name,
-			"format": print_format,
-			"no_letterhead": int(not bool(letterhead)),
-		}
-		response = self.session.get(f"{self.url}/print", params=params, stream=True)
+		response = self.session.get(
+			f"{self.url}/print",
+			params={
+				"doctype": doctype,
+				"name": name,
+				"format": print_format,
+				"no_letterhead": int(not bool(letterhead)),
+			},
+			stream=True,
+		)
 		return self.post_process_file_stream(response)
 
 	def __load_downloadable_templates(self):
@@ -278,35 +278,39 @@ class FrappeClient(object):
 		if doctype not in self.can_download:
 			raise NotUploadableException(doctype)
 
-		params = {
-			"doctype": doctype,
-			"parent_doctype": doctype,
-			"with_data": "Yes" if with_data else "No",
-			"all_doctypes": "Yes",
-		}
-
 		request = self.session.get(
-			self.url
-			+ "/api/method/frappe.core.page.data_import_tool.exporter.get_template",
-			params=params,
+			f"{self.url}/api/method/frappe.core.page.data_import_tool.exporter.get_template",
+			params={
+				"doctype": doctype,
+				"parent_doctype": doctype,
+				"with_data": "Yes" if with_data else "No",
+				"all_doctypes": "Yes",
+			},
 		)
 		return self.post_process_file_stream(request)
 
 	def get_api(self, method, params=None):
+		if params is None:
+			params = {}
+
 		res = self.session.get(f"{self.url}/api/method/{method}/", params=params)
 		return self.post_process(res)
 
 	def post_api(self, method, params=None):
+		if params is None:
+			params = {}
 		res = self.session.post(f"{self.url}/api/method/{method}/", params=params)
 		return self.post_process(res)
 
 	def get_request(self, params):
 		res = self.session.get(self.url, params=self.preprocess(params))
-		return self.post_process(res)
+		res = self.post_process(res)
+		return res
 
 	def post_request(self, data):
 		res = self.session.post(self.url, data=self.preprocess(data))
-		return self.post_process(res)
+		res = self.post_process(res)
+		return res
 
 	def preprocess(self, params):
 		"""convert dicts, lists to json"""
@@ -324,7 +328,7 @@ class FrappeClient(object):
 			raise
 
 		if rjson and ("exc" in rjson) and rjson["exc"]:
-			raise FrappeException(rjson["exc"])
+			raise FrappeException("\n".join(json.loads(rjson["exc"])))
 		if "message" in rjson:
 			return rjson["message"]
 		elif "data" in rjson:

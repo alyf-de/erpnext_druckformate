@@ -1,75 +1,110 @@
-import os
-import pathlib
+from configparser import ConfigParser
 from getpass import getpass
+from pathlib import Path
 from subprocess import run
 
 import typer
+
 from frappeclient import FrappeClient
 
-ERPNEXT_URL = "https://master.alyf.cloud"  # TODO: eigene URL eintragen
-PRINT_STYLE_PATH = "print_style/print_style"
-PRINT_FORMATS = {
-	# 'Dateiname': 'Name des Print Format in ERPNext'
-	# TODO: die verwendeten Namen anpassen oder auskommentieren
-	"quotation.jinja": "Angebot",
-	"sales_order.jinja": "Auftragsbestätigung",
-	"sales_invoice.jinja": "Ausgangsrechnung",
-	"delivery_note.jinja": "Lieferschein",
-	"purchase_order.jinja": "Bestellung",
-	"request_for_quotation.jinja": "Angebotsanfrage",
-}
-LETTER_HEAD = ("letter_head.jinja", "ALYF GmbH")
+
+def abspath(relpath: str) -> Path:
+    return Path(__file__).parent / relpath
 
 
-def get_updated_css(input_path: str, output_path: str) -> str:
-	typer.echo(f"Building CSS {input_path} -> {output_path}")
-	run(["sass", "--style=compressed", f"{PRINT_STYLE_PATH}.scss", output_path], check=True)
-	return pathlib.Path(output_path).read_text()
+def get_css(input_path: Path) -> str:
+    return run(
+        ["sass", "--style=compressed", input_path], check=True, capture_output=True
+    ).stdout.decode()
 
 
-def update_print_format(client: FrappeClient, source_path, css: str, target_name: str):
-	typer.echo(f"Syncing {source_path} -> Print Format '{target_name}'")
-	client.update(
-		{
-			"doctype": "Print Format",
-			"name": target_name,
-			"html": pathlib.Path(source_path).read_text(),
-			"css": css,
-		}
-	)
+def get_credentials(
+    config: ConfigParser,
+    base_url: str | None,
+    username: str | None,
+    password: str | None,
+) -> tuple[str, str, str]:
+    base_url = base_url or config.get("DEFAULT", "BaseURL")
+    username = username or config.get("DEFAULT", "User")
+    password = password or config.get("DEFAULT", "Password")
+
+    while not base_url:
+        base_url = input("Base URL: ")
+
+    while not username:
+        username = input("Username: ")
+
+    while not password:
+        password = getpass()
+
+    return base_url, username, password
 
 
-def update_letter_head(client: FrappeClient, source_path: str, target_name: str):
-	typer.echo(f"Syncing {source_path} -> Letter Head '{target_name}'")
+def print_format_dict(
+    print_format_name: str,
+    doctype: str,
+    module: str | None,
+    html: str,
+    css: str,
+    is_standard: bool,
+) -> dict:
+    data = {
+        "doctype": "Print Format",
+        "name": print_format_name,
+        "doc_type": doctype,
+        "custom_format": 1,
+        "html": html,
+        "css": css,
+        "print_format_type": "Jinja",
+        "standard": "Yes" if is_standard else "No",
+    }
+    if module:
+        data["module"] = module
 
-	return client.update(
-		{
-			"doctype": "Letter Head",
-			"name": target_name,
-			"footer": pathlib.Path(source_path).read_text(),
-		}
-	)
+    return data
 
 
-def main(username: str = None, password: str = None):
-	while not username:
-		username = input("Username: ")
+def sync(client: FrappeClient, print_format: dict) -> None:
+    if client.get_list(
+        "Print Format", fields=["name"], filters={"name": print_format["name"]}
+    ):
+        client.update(print_format)
+    else:
+        client.insert(print_format)
 
-	while not password:
-		password = getpass()
 
-	css = get_updated_css(f"{PRINT_STYLE_PATH}.scss", f"{PRINT_STYLE_PATH}.css")
-	client = FrappeClient(url=ERPNEXT_URL, username=username, password=password)
-	with os.scandir("print_format") as it:
-		for entry in it:
-			if entry.name not in PRINT_FORMATS:
-				continue
+def main(
+    base_url: str = None,
+    username: str = None,
+    password: str = None,
+    config_file: str = None,
+    only_template: str = None,
+):
+    config = ConfigParser()
+    config.read(abspath(config_file or "config.ini"))
+    base_url, username, password = get_credentials(config, username, password, base_url)
+    client = FrappeClient(url=base_url, username=username, password=password)
 
-			print_format_name = PRINT_FORMATS.get(entry.name)
-			update_print_format(client, entry.path, css, print_format_name)
+    css = get_css(abspath(config.get("DEFAULT", "ScssFile")))
+    for print_format_name in config.sections():
+        file_path = abspath(config.get(print_format_name, "TemplateFile"))
 
-	update_letter_head(client, *LETTER_HEAD)
+        if only_template and Path(only_template).name != file_path.name:
+            continue
+
+        print(f"Syncing {file_path.name} -> Print Format '{print_format_name}'")
+        sync(
+            client,
+            print_format_dict(
+                print_format_name,
+                doctype=config.get(print_format_name, "DocType"),
+                module=config.get(print_format_name, "Module", fallback=None),
+                html=file_path.read_text(),
+                css=css,
+                is_standard=config.getboolean(print_format_name, "IsStandard"),
+            ),
+        )
 
 
 if __name__ == "__main__":
-	typer.run(main)
+    typer.run(main)

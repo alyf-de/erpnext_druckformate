@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "appulate.filewatcher", // Runs update script when a file changes
+        "samuelcolvin.jinjahtml", // Syntax highlighting for jinja templates
+        "esbenp.prettier-vscode", // Formatting for HTML and CSS
+    ]
+}

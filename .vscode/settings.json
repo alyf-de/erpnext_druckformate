@@ -1,0 +1,17 @@
+{
+    "filewatcher.commands": [
+		{
+			"match": "\\.jinja*",
+			"isAsync": true,
+			"cmd": "${workspaceRoot}/env/bin/python ${workspaceRoot}/update.py --only-template ${fileBasename}",
+			"event": "onFileChange"
+		},
+		{
+			"match": "\\.scss*",
+			"isAsync": true,
+			"cmd": "${workspaceRoot}/env/bin/python ${workspaceRoot}/update.py",
+			"event": "onFileChange"
+		}
+	],
+	"filewatcher.autoClearConsole": false,
+}

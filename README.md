@@ -16,6 +16,48 @@ Der folgende Befehl erzeugt die Datei `print_style.css` im Ordner `print_style`:
 sass --style=compressed print_style/print_style.scss print_style/print_style.css
 ```
 
+## Update script
+
+The script `update.py` can be used to automatically update your print formats in ERPNext (without copy + paste).
+
+### Setup
+
+1. Create a virtual environment:
+
+    ```
+    python3.10 -m venv env
+    ```
+
+2. Activate the virtual environment:
+
+    ```
+    source env/bin/activate
+    ```
+
+3. Install dependencies:
+
+    ```
+    pip install -r requirements.txt
+    ```
+
+4. Set your BaseURL, User and Password in `config.ini`
+
+### Usage
+
+Your virtual environment needs to be activated before running the script. If it's not, run `source env/bin/activate` again.
+
+If everything is configured correctly, you can just run `python update.py`.
+
+For more detailed configuration options, run `python update.py --help`.
+
+### VSCode Integration
+
+VSCode can automatically push print formats to your ERPNext instance. For this, you'll need to set up your environment as described above and install the extension [File Watcher](https://marketplace.visualstudio.com/items?itemName=appulate.filewatcher).
+
+When you change one of the templates, just this one template will be synced to the server.
+
+When you change the SCSS file, all templates will be synced, since they all use the same CSS.
+
 ## Einrichtung
 
 1. Neuen **Letter Head** (dt. Briefkopf) erstellen
@@ -81,44 +123,6 @@ Sätze und längere Texte können per if-Statement übersetzt werden:
 {% else %}
     <p>Dear Sir or Madam,<p>
 {% endif %}
-```
-
-## Aktualisieren
-
-Das Skript `update.py` kann genutzt werden, um automatisch alle Druckformate in ERPNext zu aktualisieren.
-
-### Einrichtung
-
-```bash
-mkdir env
-python3 -m venv env/
-source env/bin/activate
-pip install -r requirements.txt
-```
-
-Die Konstanten `ERPNEXT_URL` und `PRINT_FORMATS` in `update.py` müssen vor der Verwendung entsprechend des Zielsystems angepasst werden.
-
-### Verwendung
-
-```
-Usage: update.py [OPTIONS]
-
-Options:
-  --username TEXT
-  --password TEXT
-  --install-completion [bash|zsh|fish|powershell|pwsh]
-                                  Install completion for the specified shell.
-  --show-completion [bash|zsh|fish|powershell|pwsh]
-                                  Show completion for the specified shell, to
-                                  copy it or customize the installation.
-  --help                          Show this message and exit.
-```
-
-Beispiel:
-
-```bash
-source env/bin/activate
-python update.py --username "Administrator" --password "P@ssw0rd"
 ```
 
 ## Unterstützung erhalten
