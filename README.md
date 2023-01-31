@@ -111,14 +111,14 @@ Weitere Dateien, die dem Verständnis, der Inspiration oder Fehlersuche dienen k
 
 ### Übersetzungen
 
-Alle Dokumente sollten auf Deutsch und Englisch funktionieren.
+Alle Dokumente sollten mehrsprachig funktionieren. Hier wird insbesondere auf Deutsch und Englisch geachtet.
 
-Kurze Begriffe können mit `_('Translate me!')` übersetzt werden. Hierbei ist in der Regel der englische Begriff zu verwenden.
+Kurze Begriffe können mit `_("Translate me!")` übersetzt werden. Hierbei ist in der Regel der englische Begriff als Grundlage verwenden, der dann bei Bedarf ad-hoc ins Deutsche übersetzt wird.
 
 Sätze und längere Texte können per if-Statement übersetzt werden:
 
 ```jinja
-{% if doc.language == "de" %}
+{% if frappe.lang == "de" %}
     <p>Sehr geehrte Damen und Herren,<p>
 {% else %}
     <p>Dear Sir or Madam,<p>
