@@ -92,9 +92,8 @@
 	<div id="subject">
 		<strong>{{ _(doc.doctype) }}: {{ doc.name }}</strong>
     </div>
-    <!-- {# if frappe.form_dict.get("_lang") == "de" #} -->
     <div class="salutation">
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+        {% if frappe.lang == "de" %}
             {% if not contact %}
                 <p>Sehr geehrte Damen und Herren,</p>
             {% else %}
@@ -249,7 +248,7 @@
             </div>
             <br>
         {% endif %}
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+        {% if frappe.lang == "de" -%}
             <p>Vielen Dank für Ihren Auftrag. Für Anmerkungen oder Fragen stehen wir gerne zur Verfügung.</p>
             <br>
             <div class="salutation">

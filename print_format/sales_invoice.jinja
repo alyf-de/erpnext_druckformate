@@ -93,7 +93,7 @@
 		<strong>{{ _("Rechnung") }} {{ doc.name }}</strong>
     </div>
     <div class="salutation">
-    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+    {% if frappe.lang == "de" %}
         {% if not contact %}
             <p>Sehr geehrte Damen und Herren,</p>
         {% else %}
@@ -250,7 +250,7 @@
             <br>
         {% endif %}
 
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+        {% if frappe.lang == "de" -%}
             <p>Sofern nicht anders angegeben entspricht das Liefer- bzw. Leistungsdatum dem Rechnungsdatum. Bitte überweisen Sie den Rechnungsbetrag unter Angabe des Verwendungszwecks "{{ doc.name }}" auf das unten angegebene Konto.</p><br>
             <p>Wir danken Ihnen für Ihr Vertrauen und die gute Zusammenarbeit. Wir freuen uns über Ihre Weiterempfehlung.</p>
             <br>

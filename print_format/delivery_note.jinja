@@ -74,7 +74,7 @@
 		<strong>Lieferschein {{ doc.name }}</strong>
     </div>
     <div class="salutation">
-    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+    {% if frappe.lang == "de" %}
         <p>Wir bedanken uns für die gute Zusammenarbeit und liefern Ihnen vereinbarungsgemäß folgende Waren:</p>
     {% else %}
         <p>We thank you for the good cooperation and deliver the following goods as agreed:</p>
@@ -134,7 +134,7 @@
             <br>
         {% endif %}
         <div class="salutation">
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+        {% if frappe.lang == "de" -%}
             <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
         {% else %}
             <p>This form was created automatically and is valid without a signature.</p>

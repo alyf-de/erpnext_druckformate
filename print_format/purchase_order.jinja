@@ -68,7 +68,7 @@
 		<strong>{{ doc.name }}</strong>
     </div>
     <div class="salutation">
-    {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+    {% if frappe.lang == "de" %}
         <p>Sehr geehrte Damen und Herren,</p>
         <br>
         <p>wir bestellen hiermit:</p>
@@ -192,7 +192,7 @@
 
     <br>
     <div>
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" %}
+        {% if frappe.lang == "de" %}
             <br>
             <p><strong>Lieferadresse:</strong><br>{{ doc.shipping_address_display }}</p>
             <br>
@@ -213,7 +213,7 @@
             <br>
         {% endif %}
         <div class="salutation">
-        {% if frappe.form_dict.get("_lang", doc.language) == "de" -%}
+        {% if frappe.lang == "de" -%}
             <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
         {% else %}
             <p>This form was created automatically and is valid without a signature.</p>
