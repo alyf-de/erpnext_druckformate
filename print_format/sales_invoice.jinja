@@ -245,9 +245,10 @@
     <br>
 
     <div class="epilogue">
-    	{% if doc.terms and (doc.terms | striptags) %}{{ doc.terms }}
-	<br>
-	{% endif %}
+        {% if doc.terms and (doc.terms | striptags) %}
+            {{ doc.terms }}
+            <br>
+        {% endif %}
 
         {% if frappe.lang == "de" -%}
             <p>Sofern nicht anders angegeben entspricht das Liefer- bzw. Leistungsdatum dem Rechnungsdatum. Bitte überweisen Sie den Rechnungsbetrag unter Angabe des Verwendungszwecks "{{ doc.name }}" auf das unten angegebene Konto.</p><br>
