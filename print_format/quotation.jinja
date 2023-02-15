@@ -214,7 +214,7 @@
     <br>
 
     <div class="epilogue">
-        {% if (doc.terms | striptags) %}
+        {% if doc.terms and (doc.terms | striptags) %}
             {{ doc.terms }}
             <br>
         {% endif %}
