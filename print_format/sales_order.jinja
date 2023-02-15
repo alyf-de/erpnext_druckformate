@@ -242,7 +242,7 @@
     <br>
 
     <div class="epilogue">
-        {% if (doc.terms | striptags) %}
+        {% if doc.terms and (doc.terms | striptags) %}
             <div class="terms">
                 {{ doc.terms }}
             </div>
