@@ -209,6 +209,16 @@
                         </tr>
                   {% endif %}
                 {%- endfor %}
+
+                {% if doc.tax_exemption_reason %}
+                    <tr>
+                        <td></td>
+                        <td>{{ _(doc.tax_exemption_reason) }}</td>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2"></td>
+                    </tr>
+                {% endif %}
             {%- endif %}
             <tr>
                 <td></td>
