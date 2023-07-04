@@ -9,9 +9,8 @@
 </style>
 
 {% set company = frappe.get_doc("Company", doc.company) %}
-{% set company_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fieldname="parent") %}
-{% set cmp_addr = frappe.get_doc("Address", company_address_name) if company_address_name else None %}
-{% set pay_addr = frappe.get_doc("Address", doc.customer_address) %}
+{% set cmp_addr = frappe.get_doc("Address", doc.company_address) if  doc.company_address else None %}
+{% set pay_addr = frappe.get_doc("Address", doc.customer_address) if doc.customer_address else None %}
 
 {% if doc.contact_person %}
     {% set contact = frappe.get_doc("Contact", doc.contact_person) %}
@@ -26,15 +25,17 @@
 
 <div class="contact-row">
     <div id="address">
+        {% if cmp_addr %}
         <div id="sender">
             <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
                 {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
                 {{ cmp_addr.pincode }} {{ cmp_addr.city }}
-                {% if cmp_addr.country != pay_addr.country -%}
+                {% if pay_addr and (cmp_addr.country != pay_addr.country) -%}
                     &#183; {{ cmp_addr.country | upper }}
                 {%- endif %}
             </p>
         </div>
+        {% endif %}
         {{ doc.customer_name }}<br />
         {% if contact %}
                 {%- if contact.salutation -%}
@@ -233,7 +234,7 @@
             <p>Wir danken Ihnen herzlich für Ihre Anfrage und freuen uns auf die weitere Zusammenarbeit.</p>
             <br>
             <div class="salutation">
-                <p>Beste Grüße nach {{ pay_addr.city }}</p>
+                <p>Beste Grüße{% if pay_addr %} nach {{ pay_addr.city }}{% endif %}</p>
                 <p>Ihr Team der {{ company.company_name }}</p>
             </div>
         {% else %}

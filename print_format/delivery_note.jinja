@@ -8,10 +8,9 @@
     }
 </style>
 
-{% set company_address_name = frappe.db.get_value("Dynamic Link", filters={"link_doctype": "Company", "link_name": doc.company, "parenttype": "Address"}, fieldname="parent") %}
-{% set cmp_addr = frappe.get_doc("Address", company_address_name) %}
 {% set company = frappe.get_doc("Company", doc.company) %}
-{% set ship_addr = frappe.get_doc("Address", doc.shipping_address_name) %}
+{% set cmp_addr = frappe.get_doc("Address", doc.company_address) if doc.company_address else None %}
+{% set ship_addr = frappe.get_doc("Address", doc.shipping_address_name) if doc.shipping_address_name else None %}
 
 <!-- HEAD -->
 <div id="header">
@@ -22,17 +21,19 @@
 
 <div class="contact-row">
     <div id="address">
+        {% if cmp_addr %}
         <div id="sender">
             <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
                 {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
                 {{ cmp_addr.pincode }} {{ cmp_addr.city }}
-                {% if cmp_addr.country != ship_addr.country -%}
+                {% if ship_addr and (cmp_addr.country != ship_addr.country) -%}
                     &#183; {{ cmp_addr.country | upper }}
                 {%- endif %}
             </p>
         </div>
+        {% endif %}
         {{ doc.customer_name }}<br />
-        {{ doc.shipping_address }}
+        {{ doc.shipping_address or "" }}
     </div>
 
     <div id="contact">
