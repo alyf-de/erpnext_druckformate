@@ -119,7 +119,7 @@
         </tbody>
 
         <tfoot class="black-border">
-            {% if doc.additional_discount_percentage %}
+            {% if doc.discount_amount %}
                 <tr>
                     <td></td>
                     <td>{{ _("Total") }}</td>
@@ -134,7 +134,9 @@
                     <td></td>
                     <td></td>
                     <td>
-                        {{ doc.get_formatted("additional_discount_percentage") }} &percnt;
+                        {% if doc.additional_discount_percentage %}
+                            {{ doc.get_formatted("additional_discount_percentage") }} &percnt;
+                        {% endif %}
                     </td>
                     <td class="text-right">
                         {{ doc.get_formatted("discount_amount") }}
