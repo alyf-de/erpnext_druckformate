@@ -80,6 +80,12 @@
                 <td class="text-right">{{ doc.po_no }}</td>
             </tr>
             {% endif %}
+            {% if doc.tax_id %}
+            <tr>
+                <td>{{ _("Your Tax ID") }}:</td>
+                <td class="text-right">{{ doc.tax_id }}</td>
+            </tr>
+            {% endif %}
             {% if doc.from_date and doc.to_date %}
             <tr>
                 <td>{{ _("Performance Period") }}:</td>
