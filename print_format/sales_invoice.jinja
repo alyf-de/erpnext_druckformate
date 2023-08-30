@@ -129,21 +129,25 @@
         </thead>
         <tbody>
             {% for n in doc.items %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td><b>{{ _(n.item_name) }}</b><br>
-                    {{ n.description }}</td>
-                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
-                <td>
-                    {{ n.get_formatted("qty") }}
-                    {% if print_settings.print_uom_after_quantity %}
-                        {{ _(n.uom) }}
-                    {% endif %}
-                </td>
-                <td>{{ n.get_formatted("rate") }}</td>
-                <!-- <td>{{ n.get_formatted("discount_amount") }}</td> -->
-                <td class="text-right">{{ n.get_formatted("amount") }}</td>
-            </tr>
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><b>{{ _(n.item_name) }}</b></td>
+                    <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                    <td>
+                        {{ n.get_formatted("qty") }}
+                        {% if print_settings.print_uom_after_quantity %}
+                            {{ _(n.uom) }}
+                        {% endif %}
+                    </td>
+                    <td>{{ n.get_formatted("rate") }}</td>
+                    <!-- <td>{{ n.get_formatted("discount_amount") }}</td> -->
+                    <td class="text-right">{{ n.get_formatted("amount") }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="4">{{ n.description }}</td>
+                    <td></td>
+                </tr>
             {% endfor %}
         </tbody>
 

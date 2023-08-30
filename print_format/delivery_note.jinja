@@ -95,32 +95,35 @@
         </thead>
         <tbody>
             {% for n in doc.items %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>
-                    <b>{{ _(n.item_name) }}</b><br>
-                    {{ n.description | striptags }}<br>
-                    {% if n.against_sales_order %}
-                        Auftrag: {{ n.against_sales_order }}<br>
-                    {% endif %}
-                    {% if n.against_sales_invoice %}
-                        Rechnung: {{ n.against_sales_invoice }}<br>
-                    {% endif %}
-                    {% if n.batch_no %}
-                        Charge: {{ n.batch_no }}<br>
-                    {% endif %}
-                    {% if n.serial_no %}
-                        Seriennummern: {{ n.serial_no }}
-                    {% endif %}
-                </td>
-                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
-                <td>
-                    {{ n.get_formatted("qty") }}
-                    {% if print_settings.print_uom_after_quantity %}
-                        {{ _(n.uom) }}
-                    {% endif %}
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><b>{{ _(n.item_name) }}</b></td>
+                    <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                    <td>
+                        {{ n.get_formatted("qty") }}
+                        {% if print_settings.print_uom_after_quantity %}
+                            {{ _(n.uom) }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="3">
+                        {{ n.description | striptags }}
+                        {% if n.against_sales_order %}
+                            <br>Auftrag: {{ n.against_sales_order }}
+                        {% endif %}
+                        {% if n.against_sales_invoice %}
+                            <br>Rechnung: {{ n.against_sales_invoice }}
+                        {% endif %}
+                        {% if n.batch_no %}
+                            <br>Charge: {{ n.batch_no }}
+                        {% endif %}
+                        {% if n.serial_no %}
+                            <br>Seriennummern: {{ n.serial_no }}
+                        {% endif %}
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
 	</table>

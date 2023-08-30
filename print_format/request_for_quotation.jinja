@@ -98,21 +98,21 @@
 
         <tbody>
             {% for n in doc.items %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>
-                    <b>{{ _(n.item_name) }}</b>
-                    <br>
-                    {{ n.description | striptags }}
-                </td>
-                <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
-                <td>
-                    {{ n.get_formatted("qty") }}
-                    {% if print_settings.print_uom_after_quantity %}
-                        {{ _(n.uom) }}
-                    {% endif %}
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><b>{{ _(n.item_name) }}</b></td>
+                    <td>{{ _(n.uom) if not print_settings.print_uom_after_quantity else '&nbsp;'}}</td>
+                    <td>
+                        {{ n.get_formatted("qty") }}
+                        {% if print_settings.print_uom_after_quantity %}
+                            {{ _(n.uom) }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td colspan="3">{{ n.description | striptags }}</td>
+                </tr>
             {% endfor %}
         </tbody>
 
