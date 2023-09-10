@@ -176,7 +176,7 @@
                     <td>
                         {% if doc.additional_discount_percentage %}
                             {{ doc.get_formatted("additional_discount_percentage") }} &percnt;
-                        {% else %}
+                        {% endif %}
                     </td>
                     <td class="text-right">
                         {{ doc.get_formatted("discount_amount") }}
