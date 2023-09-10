@@ -1,0 +1,23 @@
+name: "Jinja Syntax Check"
+
+on:
+    push:
+      branches: [ "main" ]
+    pull_request:
+      # The branches below must be a subset of the branches above
+      branches: [ "main" ]
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v4
+              with:
+                  python-version: "3.11"
+            - name: Install dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install jinja2
+            - name: Check Jinja syntax
+              run: python .github/helpers/check_jinja_syntax.py
