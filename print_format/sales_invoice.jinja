@@ -116,8 +116,16 @@
 
 <!-- CONTENT -->
 <div id="text" class="">
-	<div id="subject">
-		<strong>{{ _("Rechnung") }} {{ doc.name }} {% if doc.is_return %}({{ _("Korrektur") }}){% endif %}</strong>
+    <div id="subject">
+        {% if doc.is_return %}
+            <p><strong>{{ _("Correction Invoice") }} {{ doc.name }}</strong></p>
+            <p class="text-small">{{ _("Rectifies invoice {0}").format(doc.return_against) }}</p>
+        {% elif doc.amended_from %}
+            <p><strong>{{ _("Cancellation Invoice") }} {{ doc.name }}</strong></p>
+            <p class="text-small">{{ _("Fully cancels and replaces invoice {0}").format(doc.amended_from) }}</p>
+        {% else %}
+            <p><strong>{{ _("Invoice") }} {{ doc.name }}</strong></p>
+        {% endif %}
     </div>
     <div class="salutation">
     {% if frappe.lang == "de" %}
