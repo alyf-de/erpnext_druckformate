@@ -33,7 +33,7 @@
         </div>
         {% endif %}
         {{ doc.customer_name }}<br />
-        {{ doc.shipping_address or "" }}
+        {{ doc.shipping_address or doc.address_display or "" }}
     </div>
 
     <div id="contact">
