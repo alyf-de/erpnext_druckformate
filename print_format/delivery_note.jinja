@@ -74,15 +74,7 @@
 	<div id="subject">
 		<strong>{{ _("Delivery Note") }} {{ doc.name }}</strong>
     </div>
-    <div class="salutation">
-    {% if frappe.lang == "de" %}
-        <p>Wir bedanken uns für die gute Zusammenarbeit und liefern Ihnen vereinbarungsgemäß folgende Waren:</p>
-    {% else %}
-        <p>We thank you for the good cooperation and deliver the following goods as agreed:</p>
-    {% endif %}
-    </div>
-    <br>
-    <br>
+
 	<table class="w-100 text-small">
         <thead class="black-border">
             <tr>
@@ -128,24 +120,10 @@
         </tbody>
 	</table>
 
-    <br>
-
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            <div class="terms">
-                {{ doc.terms }}
-            </div>
-            <br>
-        {% endif %}
-        <div class="salutation">
-        {% if frappe.lang == "de" -%}
-            <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
-        {% else %}
-            <p>This form was created automatically and is valid without a signature.</p>
-        {%- endif %}
-        </div>
-    </div>
-    <br>
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 </div>
 
 <!-- FOOTER -->

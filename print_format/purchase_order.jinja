@@ -68,20 +68,7 @@
 	<div id="subject">
 		<strong>{{ _("Purchase Order") }} {{ doc.name }}</strong>
     </div>
-    <div class="salutation">
-    {% if frappe.lang == "de" %}
-        <p>Sehr geehrte Damen und Herren,</p>
-        <br>
-        <p>wir bestellen hiermit:</p>
-    {% else %}
-        <p>Dear Sir or Madam,</p>
-        <br>
-        <p>we hereby order:</p>
-    {% endif %}
 
-    </div>
-    <br>
-    <br>
     <table class="w-100 text-small">
         <thead class="black-border">
             <tr>
@@ -208,22 +195,11 @@
             <p><strong>Please deliver by:</strong> {{ doc.get_formatted("schedule_date") }}</p>
         {% endif %}
     </div>
-    <br>
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            <div class="terms">
-                {{ doc.terms }}
-            </div>
-            <br>
-        {% endif %}
-        <div class="salutation">
-        {% if frappe.lang == "de" -%}
-            <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
-        {% else %}
-            <p>This form was created automatically and is valid without a signature.</p>
-        {%- endif %}
-        </div>
-    </div>
+
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 </div>
 
 <!-- FOOTER -->

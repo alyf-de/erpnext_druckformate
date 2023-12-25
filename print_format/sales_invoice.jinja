@@ -127,26 +127,6 @@
             <p><strong>{{ _("Invoice") }} {{ doc.name }}</strong></p>
         {% endif %}
     </div>
-    <div class="salutation">
-    {% if frappe.lang == "de" %}
-        <p>Sehr geehrte Damen und Herren,</p>
-        <br>
-        {% if doc.is_return %}
-            <p>hiermit korrigieren wir Rechnung {{ doc.return_against }} vom {{ frappe.format_date(frappe.db.get_value("Sales Invoice", doc.return_against, "posting_date")) }}:</p>
-        {% else %}
-            <p>vielen Dank für Ihren Auftrag! Wir erlauben uns, unsere Leistungen wie folgt in Rechnung zu stellen:</p>
-        {% endif %}
-    {% else %}
-        <p>Dear Sir or Madam,</p>
-        <br>
-        {% if doc.is_return %}
-            <p>we hereby correct invoice {{ doc.return_against }} dated {{ frappe.format_date(frappe.db.get_value("Sales Invoice", doc.return_against, "posting_date")) }}:</p>
-        {% else %}
-            <p>many thanks for your order! We have enjoyed working for you. We send you the following invoice for our work:</p>
-        {% endif %}
-    {% endif %}
-    </div>
-    <br>
 
     <table class="w-100 text-small">
         <thead class="black-border">
@@ -291,36 +271,10 @@
         </tfoot>
     </table>
 
-    <br>
-
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            {{ doc.terms }}
-            <br>
-        {% endif %}
-
-        {% if frappe.lang == "de" -%}
-            {% if not doc.is_return %}
-                <p>Sofern nicht anders angegeben entspricht das Liefer- bzw. Leistungsdatum dem Rechnungsdatum. Bitte überweisen Sie den Rechnungsbetrag unter Angabe des Verwendungszwecks "{{ doc.name }}" auf das unten angegebene Konto.</p><br>
-                <p>Wir danken Ihnen für Ihr Vertrauen und die gute Zusammenarbeit. Wir freuen uns über Ihre Weiterempfehlung.</p>
-            {% endif %}
-            <br>
-            <div class="salutation">
-                <p>Beste Grüße{% if pay_addr %} nach {{ pay_addr.city }}{% endif %}</p>
-                <p>Ihr Team der {{ company.company_name }}</p>
-            </div>
-        {% else %}
-            {% if not doc.is_return %}
-                <p>Unless otherwise stated, the date of delivery or performance corresponds to the date of invoice. Please transfer the invoice amount to the account stated below, stating the reason for payment "{{ doc.name }}".</p><br>
-                <p>Thank you for your trust and the good cooperation. We would be pleased about your recommendation.</p>
-            {% endif %}
-            <br>
-            <div class="salutation">
-                <p>Best regards,</p>
-                <p>Your team at {{ company.company_name }}</p>
-            </div>
-        {%- endif %}
-    </div>
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 
     {% if doc.timesheets -%}
     <div style="page-break-after: always"></div>
