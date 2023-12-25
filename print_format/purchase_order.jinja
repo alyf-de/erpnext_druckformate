@@ -183,17 +183,14 @@
 
     <br>
     <div>
-        {% if frappe.lang == "de" %}
-            <br>
-            <p><strong>Lieferadresse:</strong><br>{{ doc.shipping_address_display }}</p>
-            <br>
-            <p><strong>Bitte liefern Sie bis zum:</strong> {{ doc.get_formatted("schedule_date") }}</p>
-        {% else %}
-            <br>
-            <p><strong>Shipping Address:</strong><br>{{ doc.shipping_address_display }}</p>
-            <br>
-            <p><strong>Please deliver by:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        {% if doc.shipping_address_display %}
+        <p>
+            {{ _("Shipping Address:") }} <br>
+            {{ doc.shipping_address_display }}
+        </p>
+        <br>
         {% endif %}
+        <p>{{ _("Please deliver by: {0}").format(doc.get_formatted("schedule_date")) }}</p>
     </div>
 
     {% if doc.terms and (doc.terms | striptags) %}
