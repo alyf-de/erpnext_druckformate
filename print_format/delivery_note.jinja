@@ -100,8 +100,8 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="3">
-                        {{ n.description | striptags }}
+                    <td colspan="2">
+                        {{ n.description }}
                         {% if n.against_sales_order %}
                             <br>Auftrag: {{ n.against_sales_order }}
                         {% endif %}
@@ -115,6 +115,7 @@
                             <br>Seriennummern: {{ n.serial_no }}
                         {% endif %}
                     </td>
+                    <td></td>
                 </tr>
             {% endfor %}
         </tbody>
