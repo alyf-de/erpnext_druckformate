@@ -70,10 +70,6 @@
                 <td>{{ _("Valid Till") }}:</td>
                 <td class="text-right">{{ frappe.utils.formatdate(doc.valid_till, "long") }}</td>
             </tr>
-            <tr>
-                <td>{{ _("Our Sign") }}:</td>
-                <td class="text-right">{{ doc.name }}</td>
-            </tr>
         </table>
     </div>
 </div>
@@ -84,8 +80,8 @@
 
 <!-- CONTENT -->
 <div id="text">
-	<div id="subject">
-		<strong>{{ _(doc.doctype) }} {{ doc.name }}</strong>
+    <div id="subject">
+        <strong>{{ _(doc.doctype) }} {{ doc.name }}</strong>
     </div>
 
     <table class="w-100 text-small">
@@ -161,7 +157,7 @@
             {% if doc.tax_category == "Reverse Charge" -%}
                 <tr>
                     <td></td>
-                    <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                    <td>Steuerschuldnerschaft des Leistungsempfängers / The recipient of the supply is liable for tax</td>
                     <td></td>
                     <td></td>
                     <td></td>

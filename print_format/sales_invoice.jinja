@@ -75,14 +75,9 @@
             </tr>
             {% endif %}
 
-            <tr>
-                <td>{{ _("Our Sign") }}:</td>
-                <td class="text-right">{{ doc.name }}</td>
-            </tr>
-
             {% if doc.po_no %}
             <tr>
-                <td>{{ _("Your Sign") }}:</td>
+                <td>{{ _("Your PO No.") }}:</td>
                 <td class="text-right">{{ doc.po_no }}</td>
             </tr>
             {% endif %}
@@ -201,7 +196,7 @@
             {% if doc.tax_category == "Reverse Charge" -%}
                 <tr>
                     <td></td>
-                    <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                    <td>Steuerschuldnerschaft des Leistungsempfängers / The recipient of the supply is liable for tax</td>
                     <td></td>
                     <td></td>
                     <td></td>

@@ -57,7 +57,7 @@
             </tr>
             {% if doc.po_no %}
             <tr>
-                <td>Ihre Bestellnummer:</td>
+                <td>{{ _("Your PO No.") }}:</td>
                 <td class="text-right">{{ doc.po_no }}</td>
             </tr>
             {% endif %}
@@ -103,16 +103,16 @@
                     <td colspan="2">
                         {{ n.description }}
                         {% if n.against_sales_order %}
-                            <br>Auftrag: {{ n.against_sales_order }}
+                            <br>{{ _("Sales Order: {0}").format(n.against_sales_order) }}
                         {% endif %}
                         {% if n.against_sales_invoice %}
-                            <br>Rechnung: {{ n.against_sales_invoice }}
+                            <br>{{ _("Sales Invoice: {0}").format(n.against_sales_invoice) }}
                         {% endif %}
                         {% if n.batch_no %}
-                            <br>Charge: {{ n.batch_no }}
+                            <br>{{ _("Batch No: {0}").format(n.batch_no) }}
                         {% endif %}
                         {% if n.serial_no %}
-                            <br>Seriennummern: {{ n.serial_no }}
+                            <br>{{ _("Serial Numbers: {0}").format(n.serial_no) }}
                         {% endif %}
                     </td>
                     <td></td>
