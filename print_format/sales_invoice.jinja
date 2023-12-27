@@ -110,7 +110,7 @@
 <div id="faltmarke-2" class="din-mark"></div>
 
 <!-- CONTENT -->
-<div id="text" class="">
+<div id="text">
     <div id="subject">
         {% if doc.is_return %}
             <p><strong>{{ _("Correction Invoice") }} {{ doc.name }}</strong></p>
@@ -280,9 +280,9 @@
                 <thead>
                     <tr>
                         <th style="width: 40px" class="table-sr">{{ _("Sr") }}</th>
-                        <th style="width: 150px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
+                        <th style="width: 150px;" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Date")}}</th>
-                        <th style="width: 300px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
+                        <th style="width: 300px;" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Note")}}</th>
                         <th style="width: 80px;" class="text-right" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Hours")}}</th>
@@ -294,12 +294,12 @@
                         {% if timesheet.total_billable_amount > 0 and timesheet.customer_note %}
                             <tr style="page-break-inside: avoid;">
                                 <td class="table-sr">{{ loop.index }}</td>
-                                <td class="" data-fieldname="timesheets" data-fieldtype="Table">
+                                <td data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
                                         {{ timesheet.get_formatted('start_date') }}
                                     </div>
                                 </td>
-                                <td class="" data-fieldname="timesheets" data-fieldtype="Table">
+                                <td data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
                                         {{ timesheet.note }}
                                     </div>
