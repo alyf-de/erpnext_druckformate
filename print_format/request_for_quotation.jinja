@@ -8,12 +8,12 @@
     }
 </style>
 
-{% set company_address_names = frappe.get_all("Address", filters=[["Dynamic Link", "link_doctype", "=", "Company"], ["Dynamic Link", "link_name", "=", "ALYF GmbH"]], or_filters={"address_type": "Billing", "is_primary_address": 1}, pluck="name") %}
-{% set cmp_addr = frappe.get_doc("Address", company_address_names[0]) if company_address_names else None %}
+{% set bill_addr = frappe.get_doc("Address", doc.company_address) if doc.company_address else None %}
 {% set company = frappe.get_doc("Company", doc.company) %}
 
-{% set supplier_address_names = frappe.get_all("Address", filters=[["Dynamic Link", "link_doctype", "=", "Supplier"], ["Dynamic Link", "link_name", "=", doc.supplier]], or_filters={"address_type": "Billing", "is_primary_address": 1}, pluck="name") %}
-{% set pay_addr = frappe.get_doc("Address", supplier_address_names[0]) if supplier_address_names else None %}
+{% set supplier = frappe.get_doc("Supplier", doc.vendor) %}
+{% set supplier_addresses = frappe.get_all("Dynamic Link", filters={"link_doctype": "Supplier", "link_name": supplier.name, "parenttype": "Address"}, fields=["parent"]) %}
+{% set pay_addr = frappe.get_doc("Address", supplier_addresses[0]["parent"]) %}
 
 <!-- HEAD -->
 <div id="header">
@@ -24,40 +24,48 @@
 
 <div class="contact-row">
     <div id="address">
-        {% if cmp_addr %}
         <div id="sender">
-            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
-            {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }}<br>{% endif %}
-            {{ cmp_addr.pincode }} {{ cmp_addr.city }}
-            {% if pay_addr and (cmp_addr.country != pay_addr.country) -%}
-                    &#183; {{ cmp_addr.country | upper }}
-            {%- endif %}
-            </p>
+            {% if bill_addr %}
+                <p>{{ bill_addr.address_title }} &#183; {{ bill_addr.address_line1 }} &#183;
+                {% if bill_addr.address_line2 %}{{ bill_addr.address_line2 }}<br>{% endif %}
+                {{ bill_addr.pincode }} {{ bill_addr.city }}
+                {% if bill_addr.country != pay_addr.country -%}
+                        &#183; {{ bill_addr.country | upper }}
+                {%- endif %}
+                </p>
+            {% endif %}
         </div>
-        {% endif %}
-        {{ doc.vendor }}
-        {% if pay_addr %}<br/>{{ pay_addr.get_display() }}{% endif %}
+        {{ supplier.supplier_name }}<br />
+        {{ pay_addr.get_display() }}
     </div>
 
     <div id="contact">
         <table class="w-100 text-small">
-            {% if company.phone_no %}
-            <tr>
-                <td>{{ _("Phone") }}:</td>
-                <td class="text-right">{{ company.phone_no }}</td>
-            </tr>
-            {% endif %}
+            <colgroup>
+                <col style="width: 25mm">
+                <col style="width: 50mm">
+            </colgroup>
 
-            {% if company.email %}
-            <tr>
-                <td>{{ _("Email") }}:</td>
-                <td class="text-right">{{ company.email }}</td>
-            </tr>
-            {% endif %}
-            <tr>
-                <td>{{ _("Date") }}:</td>
-                <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "long") }}</td>
-            </tr>
+            <tbody>
+                {% if company.phone_no %}
+                <tr>
+                    <td>{{ _("Phone") }}:</td>
+                    <td class="text-right">{{ company.phone_no }}</td>
+                </tr>
+                {% endif %}
+
+                {% if company.email %}
+                <tr>
+                    <td>{{ _("Email") }}:</td>
+                    <td class="text-right">{{ company.email }}</td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                    <td>{{ _("Date") }}:</td>
+                    <td class="text-right">{{ frappe.utils.formatdate(doc.transaction_date, "long") }}</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </div>
@@ -75,8 +83,8 @@
     <table class="w-100 text-small">
         <thead class="black-border">
             <tr>
-                <th style="width: 10%">{{ _("Sr") }}</th>
-                <th style="width: 30%">{{ _("Description") }}</th>
+                <th style="width: 5%">{{ _("Sr") }}</th>
+                <th style="width: 35%">{{ _("Description") }}</th>
                 <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
             </tr>
@@ -97,7 +105,17 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="3">{{ n.description }}</td>
+                    <td colspan="3">
+                        {% if (n.description | striptags) != n.item_name %}
+                            {{ n.description }}<br>
+                        {% endif %}
+
+                        {{ _("Our Part No.: {0}").format(n.item_code) }}
+                        {% if n.supplier_part_no %}
+                            <br>
+                            {{ _("Your Part No.: {0}").format(n.supplier_part_no) }}
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -105,12 +123,7 @@
         <tfoot class="black-border"></tfoot>
     </table>
 
-    {% if doc.message_for_supplier %}
-        <br>
-        {{ doc.message_for_supplier }}
-    {% endif %}
-
-    {% if (doc.terms | striptags) %}
+    {% if doc.terms and (doc.terms | striptags) %}
         <br>
         {{ doc.terms }}
     {% endif %}
