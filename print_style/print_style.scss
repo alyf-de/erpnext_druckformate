@@ -25,14 +25,15 @@
 
     #sender {
         position: relative;
-        font-size: 75%;
+        font-size: 50%;
         height: 17.7mm;
+        display: table-cell;
+        vertical-align: middle;
     }
 
     #sender p {
         position: absolute;
         width: 85mm;
-        bottom: 0;
     }
 
     #address {
