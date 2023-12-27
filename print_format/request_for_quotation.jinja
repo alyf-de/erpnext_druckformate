@@ -84,7 +84,7 @@
         <thead class="black-border">
             <tr>
                 <th style="width: 5%">{{ _("Sr") }}</th>
-                <th style="width: 35%">{{ _("Description") }}</th>
+                <th style="width: 75%">{{ _("Description") }}</th>
                 <th style="width: 10%">{{ _("Unit") if not print_settings.print_uom_after_quantity else '&nbsp;'}}</th>
                 <th style="width: 10%">{{ _("Qty") }}</th>
             </tr>
@@ -105,7 +105,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="3">
+                    <td colspan="2">
                         {% if (n.description | striptags) != n.item_name %}
                             {{ n.description }}<br>
                         {% endif %}
@@ -116,6 +116,7 @@
                             {{ _("Your Part No.: {0}").format(n.supplier_part_no) }}
                         {% endif %}
                     </td>
+                    <td></td>
                 </tr>
             {% endfor %}
         </tbody>
