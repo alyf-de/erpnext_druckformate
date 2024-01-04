@@ -274,45 +274,73 @@
     {% if doc.timesheets -%}
     <div style="page-break-after: always"></div>
     <div class="timesheets">
-        <h3>Zeiterfassung</h3>
+        <p style="padding-top: 1em; padding-bottom: 0.33em">
+            <strong>{{ _("Time Logs") }}</strong>
+        </p>
         <div data-fieldname="timesheets" data-fieldtype="Table">
-            <table class="table table-bordered table-condensed">
-                <thead>
+            <table class="w-100 text-small">
+                <thead class="black-border">
                     <tr>
                         <th style="width: 40px" class="table-sr">{{ _("Sr") }}</th>
-                        <th style="width: 150px;" data-fieldname="timesheets" data-fieldtype="Table">
+                        <th style="width: 80px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Date")}}</th>
-                        <th style="width: 300px;" data-fieldname="timesheets" data-fieldtype="Table">
+                        <th style="width: 370px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Note")}}</th>
                         <th style="width: 80px;" class="text-right" data-fieldname="timesheets" data-fieldtype="Table">
-                            {{_("Hours")}}</th>
+                            {{_("Duration")}}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for ts in doc.timesheets | sort(attribute='start_date') %}
-                    {% set timesheet = frappe.get_doc("Timesheet", ts.time_sheet)%}
-                        {% if timesheet.total_billable_amount > 0 and timesheet.customer_note %}
+                    {% for time_log in doc.timesheets | sort(attribute="start_date") %}
+                    {% set timesheet = frappe.get_doc("Timesheet", time_log.time_sheet)%}
+                        {% if timesheet.total_billable_amount > 0 %}
                             <tr style="page-break-inside: avoid;">
                                 <td class="table-sr">{{ loop.index }}</td>
-                                <td data-fieldname="timesheets" data-fieldtype="Table">
+                                <td class="" data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
-                                        {{ timesheet.get_formatted('start_date') }}
+                                        {{ frappe.utils.formatdate(timesheet.start_date, "dd.mm.yy") }}
                                     </div>
                                 </td>
-                                <td data-fieldname="timesheets" data-fieldtype="Table">
+                                <td class="" data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
-                                        {{ timesheet.note }}
+                                        {{ time_log.description }}
                                     </div>
                                 </td>
                                 <td class="text-right" data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
-                                        {{ "{:.2f}".format(timesheet.total_billable_hours) | replace(".", ",") }}
+                                        {{
+                                            frappe.format(
+                                                frappe.utils.rounded(time_log.billing_hours * 60) * 60,
+                                                {"fieldtype": "Duration"}
+                                            )
+                                        }}
                                     </div>
                                 </td>
                             </tr>
                         {% endif %}
                     {% endfor %}
                 </tbody>
+                <tfoot class="black-border">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>
+                                {{ _("Total Duration") }}
+                            </strong>
+                        </td>
+                        <td class="text-right">
+                            <strong>
+                                {{ 
+                                    frappe.format(
+                                        frappe.utils.rounded(doc.total_billing_hours * 60) * 60,
+                                        {"fieldtype": "Duration", "hide_days": 1}
+                                    )
+                                }}
+                            </strong>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
