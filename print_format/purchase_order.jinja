@@ -37,7 +37,7 @@
     </div>
 
     <div id="contact">
-        <table class="text-small">
+        <table class="w-100 text-small">
             {% if company.phone_no %}
             <tr>
                 <td>{{ _("Phone") }}:</td>
@@ -64,24 +64,11 @@
 <div id="faltmarke-2" class="din-mark"></div>
 
 <!-- CONTENT -->
-<div id="text" class="">
-	<div id="subject">
-		<strong>{{ _("Purchase Order") }}: {{ doc.name }}</strong>
+<div id="text">
+    <div id="subject">
+        <strong>{{ _("Purchase Order") }} {{ doc.name }}</strong>
     </div>
-    <div class="salutation">
-    {% if frappe.lang == "de" %}
-        <p>Sehr geehrte Damen und Herren,</p>
-        <br>
-        <p>wir bestellen hiermit:</p>
-    {% else %}
-        <p>Dear Sir or Madam,</p>
-        <br>
-        <p>we hereby order:</p>
-    {% endif %}
 
-    </div>
-    <br>
-    <br>
     <table class="w-100 text-small">
         <thead class="black-border">
             <tr>
@@ -113,7 +100,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="4">{{ n.description | striptags }}</td>
+                    <td colspan="4">{{ n.description }}</td>
                     <td></td>
                 </tr>
             {% endfor %}
@@ -155,7 +142,7 @@
             {% if doc.tax_category == "Reverse Charge" -%}
                 <tr>
                     <td></td>
-                    <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                    <td>Steuerschuldnerschaft des Leistungsempfängers / The recipient of the supply is liable for tax</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -196,34 +183,20 @@
 
     <br>
     <div>
-        {% if frappe.lang == "de" %}
-            <br>
-            <p><strong>Lieferadresse:</strong><br>{{ doc.shipping_address_display }}</p>
-            <br>
-            <p><strong>Bitte liefern Sie bis zum:</strong> {{ doc.get_formatted("schedule_date") }}</p>
-        {% else %}
-            <br>
-            <p><strong>Shipping Address:</strong><br>{{ doc.shipping_address_display }}</p>
-            <br>
-            <p><strong>Please deliver by:</strong> {{ doc.get_formatted("schedule_date") }}</p>
+        {% if doc.shipping_address_display %}
+        <p>
+            {{ _("Shipping Address:") }} <br>
+            {{ doc.shipping_address_display }}
+        </p>
+        <br>
         {% endif %}
+        <p>{{ _("Please deliver by: {0}").format(doc.get_formatted("schedule_date")) }}</p>
     </div>
-    <br>
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            <div class="terms">
-                {{ doc.terms }}
-            </div>
-            <br>
-        {% endif %}
-        <div class="salutation">
-        {% if frappe.lang == "de" -%}
-            <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
-        {% else %}
-            <p>This form was created automatically and is valid without a signature.</p>
-        {%- endif %}
-        </div>
-    </div>
+
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 </div>
 
 <!-- FOOTER -->

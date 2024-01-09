@@ -48,7 +48,7 @@
     </div>
 
     <div id="contact">
-        <table>
+        <table class="w-100 text-small">
             {% if company.phone_no %}
             <tr>
                 <td>{{ _("Phone") }}:</td>
@@ -75,14 +75,9 @@
             </tr>
             {% endif %}
 
-            <tr>
-                <td>{{ _("Our Sign") }}:</td>
-                <td class="text-right">{{ doc.name }}</td>
-            </tr>
-
             {% if doc.po_no %}
             <tr>
-                <td>{{ _("Your Sign") }}:</td>
+                <td>{{ _("Your PO No.") }}:</td>
                 <td class="text-right">{{ doc.po_no }}</td>
             </tr>
             {% endif %}
@@ -115,30 +110,18 @@
 <div id="faltmarke-2" class="din-mark"></div>
 
 <!-- CONTENT -->
-<div id="text" class="">
-	<div id="subject">
-		<strong>{{ _("Rechnung") }} {{ doc.name }} {% if doc.is_return %}({{ _("Korrektur") }}){% endif %}</strong>
-    </div>
-    <div class="salutation">
-    {% if frappe.lang == "de" %}
-        <p>Sehr geehrte Damen und Herren,</p>
-        <br>
+<div id="text">
+    <div id="subject">
         {% if doc.is_return %}
-            <p>hiermit korrigieren wir Rechnung {{ doc.return_against }} vom {{ frappe.format_date(frappe.db.get_value("Sales Invoice", doc.return_against, "posting_date")) }}:</p>
+            <p><strong>{{ _("Correction Invoice") }} {{ doc.name }}</strong></p>
+            <p class="text-small">{{ _("Rectifies invoice {0}").format(doc.return_against) }}</p>
+        {% elif doc.amended_from %}
+            <p><strong>{{ _("Cancellation Invoice") }} {{ doc.name }}</strong></p>
+            <p class="text-small">{{ _("Fully cancels and replaces invoice {0}").format(doc.amended_from) }}</p>
         {% else %}
-            <p>vielen Dank für Ihren Auftrag! Wir erlauben uns, unsere Leistungen wie folgt in Rechnung zu stellen:</p>
+            <p><strong>{{ _("Invoice") }} {{ doc.name }}</strong></p>
         {% endif %}
-    {% else %}
-        <p>Dear Sir or Madam,</p>
-        <br>
-        {% if doc.is_return %}
-            <p>we hereby correct invoice {{ doc.return_against }} dated {{ frappe.format_date(frappe.db.get_value("Sales Invoice", doc.return_against, "posting_date")) }}:</p>
-        {% else %}
-            <p>many thanks for your order! We have enjoyed working for you. We send you the following invoice for our work:</p>
-        {% endif %}
-    {% endif %}
     </div>
-    <br>
 
     <table class="w-100 text-small">
         <thead class="black-border">
@@ -213,7 +196,7 @@
             {% if doc.tax_category == "Reverse Charge" -%}
                 <tr>
                     <td></td>
-                    <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                    <td>Steuerschuldnerschaft des Leistungsempfängers / The recipient of the supply is liable for tax</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -283,79 +266,81 @@
         </tfoot>
     </table>
 
-    <br>
-
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            {{ doc.terms }}
-            <br>
-        {% endif %}
-
-        {% if frappe.lang == "de" -%}
-            {% if not doc.is_return %}
-                <p>Sofern nicht anders angegeben entspricht das Liefer- bzw. Leistungsdatum dem Rechnungsdatum. Bitte überweisen Sie den Rechnungsbetrag unter Angabe des Verwendungszwecks "{{ doc.name }}" auf das unten angegebene Konto.</p><br>
-                <p>Wir danken Ihnen für Ihr Vertrauen und die gute Zusammenarbeit. Wir freuen uns über Ihre Weiterempfehlung.</p>
-            {% endif %}
-            <br>
-            <div class="salutation">
-                <p>Beste Grüße{% if pay_addr %} nach {{ pay_addr.city }}{% endif %}</p>
-                <p>Ihr Team der {{ company.company_name }}</p>
-            </div>
-        {% else %}
-            {% if not doc.is_return %}
-                <p>Unless otherwise stated, the date of delivery or performance corresponds to the date of invoice. Please transfer the invoice amount to the account stated below, stating the reason for payment "{{ doc.name }}".</p><br>
-                <p>Thank you for your trust and the good cooperation. We would be pleased about your recommendation.</p>
-            {% endif %}
-            <br>
-            <div class="salutation">
-                <p>Best regards,</p>
-                <p>Your team at {{ company.company_name }}</p>
-            </div>
-        {%- endif %}
-    </div>
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 
     {% if doc.timesheets -%}
     <div style="page-break-after: always"></div>
     <div class="timesheets">
-        <h3>Zeiterfassung</h3>
+        <p style="padding-top: 1em; padding-bottom: 0.33em">
+            <strong>{{ _("Time Logs") }}</strong>
+        </p>
         <div data-fieldname="timesheets" data-fieldtype="Table">
-            <table class="table table-bordered table-condensed">
-                <thead>
+            <table class="w-100 text-small">
+                <thead class="black-border">
                     <tr>
                         <th style="width: 40px" class="table-sr">{{ _("Sr") }}</th>
-                        <th style="width: 150px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
+                        <th style="width: 80px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Date")}}</th>
-                        <th style="width: 300px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
+                        <th style="width: 370px;" class="" data-fieldname="timesheets" data-fieldtype="Table">
                             {{_("Note")}}</th>
                         <th style="width: 80px;" class="text-right" data-fieldname="timesheets" data-fieldtype="Table">
-                            {{_("Hours")}}</th>
+                            {{_("Duration")}}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for ts in doc.timesheets | sort(attribute='start_date') %}
-                    {% set timesheet = frappe.get_doc("Timesheet", ts.time_sheet)%}
-                        {% if timesheet.total_billable_amount > 0 and timesheet.customer_note %}
+                    {% for time_log in doc.timesheets | sort(attribute="start_date") %}
+                    {% set timesheet = frappe.get_doc("Timesheet", time_log.time_sheet)%}
+                        {% if timesheet.total_billable_amount > 0 %}
                             <tr style="page-break-inside: avoid;">
                                 <td class="table-sr">{{ loop.index }}</td>
                                 <td class="" data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
-                                        {{ timesheet.get_formatted('start_date') }}
+                                        {{ frappe.utils.formatdate(timesheet.start_date, "dd.mm.yy") }}
                                     </div>
                                 </td>
                                 <td class="" data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
-                                        {{ timesheet.note }}
+                                        {{ time_log.description }}
                                     </div>
                                 </td>
                                 <td class="text-right" data-fieldname="timesheets" data-fieldtype="Table">
                                     <div class="value">
-                                        {{ "{:.2f}".format(timesheet.total_billable_hours) | replace(".", ",") }}
+                                        {{
+                                            frappe.format(
+                                                frappe.utils.rounded(time_log.billing_hours * 60) * 60,
+                                                {"fieldtype": "Duration"}
+                                            )
+                                        }}
                                     </div>
                                 </td>
                             </tr>
                         {% endif %}
                     {% endfor %}
                 </tbody>
+                <tfoot class="black-border">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <strong>
+                                {{ _("Total Duration") }}
+                            </strong>
+                        </td>
+                        <td class="text-right">
+                            <strong>
+                                {{ 
+                                    frappe.format(
+                                        frappe.utils.rounded(doc.total_billing_hours * 60) * 60,
+                                        {"fieldtype": "Duration", "hide_days": 1}
+                                    )
+                                }}
+                            </strong>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>

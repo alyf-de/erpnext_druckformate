@@ -33,11 +33,11 @@
         </div>
         {% endif %}
         {{ doc.customer_name }}<br />
-        {{ doc.shipping_address or "" }}
+        {{ doc.shipping_address or doc.address_display or "" }}
     </div>
 
     <div id="contact">
-        <table class="text-small">
+        <table class="w-100 text-small">
             {% if company.phone_no %}
             <tr>
                 <td>{{ _("Phone") }}:</td>
@@ -57,7 +57,7 @@
             </tr>
             {% if doc.po_no %}
             <tr>
-                <td>Ihre Bestellnummer:</td>
+                <td>{{ _("Your PO No.") }}:</td>
                 <td class="text-right">{{ doc.po_no }}</td>
             </tr>
             {% endif %}
@@ -72,17 +72,9 @@
 <!-- CONTENT -->
 <div id="text">
 	<div id="subject">
-		<strong>{{ _("Delivery Note") }}: {{ doc.name }}</strong>
+		<strong>{{ _("Delivery Note") }} {{ doc.name }}</strong>
     </div>
-    <div class="salutation">
-    {% if frappe.lang == "de" %}
-        <p>Wir bedanken uns für die gute Zusammenarbeit und liefern Ihnen vereinbarungsgemäß folgende Waren:</p>
-    {% else %}
-        <p>We thank you for the good cooperation and deliver the following goods as agreed:</p>
-    {% endif %}
-    </div>
-    <br>
-    <br>
+
 	<table class="w-100 text-small">
         <thead class="black-border">
             <tr>
@@ -108,44 +100,31 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="3">
-                        {{ n.description | striptags }}
+                    <td colspan="2">
+                        {{ n.description }}
                         {% if n.against_sales_order %}
-                            <br>Auftrag: {{ n.against_sales_order }}
+                            <br>{{ _("Sales Order: {0}").format(n.against_sales_order) }}
                         {% endif %}
                         {% if n.against_sales_invoice %}
-                            <br>Rechnung: {{ n.against_sales_invoice }}
+                            <br>{{ _("Sales Invoice: {0}").format(n.against_sales_invoice) }}
                         {% endif %}
                         {% if n.batch_no %}
-                            <br>Charge: {{ n.batch_no }}
+                            <br>{{ _("Batch No: {0}").format(n.batch_no) }}
                         {% endif %}
                         {% if n.serial_no %}
-                            <br>Seriennummern: {{ n.serial_no }}
+                            <br>{{ _("Serial Numbers: {0}").format(n.serial_no) }}
                         {% endif %}
                     </td>
+                    <td></td>
                 </tr>
             {% endfor %}
         </tbody>
 	</table>
 
-    <br>
-
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            <div class="terms">
-                {{ doc.terms }}
-            </div>
-            <br>
-        {% endif %}
-        <div class="salutation">
-        {% if frappe.lang == "de" -%}
-            <p>Dieses Formular wurde maschinell erstellt und ist ohne Unterschrift gültig.</p>
-        {% else %}
-            <p>This form was created automatically and is valid without a signature.</p>
-        {%- endif %}
-        </div>
-    </div>
-    <br>
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 </div>
 
 <!-- FOOTER -->

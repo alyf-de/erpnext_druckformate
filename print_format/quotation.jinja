@@ -48,7 +48,7 @@
     </div>
 
     <div id="contact">
-        <table>
+        <table class="w-100 text-small">
             {% if company.phone_no %}
             <tr>
                 <td>{{ _("Phone") }}:</td>
@@ -70,10 +70,6 @@
                 <td>{{ _("Valid Till") }}:</td>
                 <td class="text-right">{{ frappe.utils.formatdate(doc.valid_till, "long") }}</td>
             </tr>
-            <tr>
-                <td>{{ _("Our Sign") }}:</td>
-                <td class="text-right">{{ doc.name }}</td>
-            </tr>
         </table>
     </div>
 </div>
@@ -84,28 +80,9 @@
 
 <!-- CONTENT -->
 <div id="text">
-	<div id="subject">
-		<strong>{{ _(doc.doctype) }}: {{ doc.name }}</strong>
+    <div id="subject">
+        <strong>{{ _(doc.doctype) }} {{ doc.name }}</strong>
     </div>
-    {% if frappe.lang == "de" %}
-        {% if not contact %}
-            <p>Sehr geehrte Damen und Herren,</p>
-        {% else %}
-            <p>Sehr geehrte{% if contact.salutation in ["Hr.", "Herr"] %}r{% endif %} {{ contact.salutation }} {{ contact.last_name }},<p>
-        {% endif %}
-        <br>
-        <p>gerne machen wir Ihnen folgendes Angebot:</p>
-    {% else %}
-        {% if not contact %}
-            <p>Dear Sir or Madam,</p>
-        {% else %}
-            <p>Dear {{ contact.salutation }} {{ contact.last_name }},<p>
-        {% endif %}
-        <br>
-        <p>we are happy to provide you the following quotation:</p>
-    {% endif %}
-    <br>
-    <br>
 
     <table class="w-100 text-small">
         <thead class="black-border">
@@ -180,7 +157,7 @@
             {% if doc.tax_category == "Reverse Charge" -%}
                 <tr>
                     <td></td>
-                    <td>Steuerschuldnerschaft des Leistungsempfängers.</td>
+                    <td>Steuerschuldnerschaft des Leistungsempfängers / The recipient of the supply is liable for tax</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -228,31 +205,10 @@
         </tfoot>
     </table>
 
-    <br>
-
-    <div class="epilogue">
-        {% if doc.terms and (doc.terms | striptags) %}
-            {{ doc.terms }}
-            <br>
-        {% endif %}
-
-        {% if frappe.lang == "de" -%}
-            <p>Wir danken Ihnen herzlich für Ihre Anfrage und freuen uns auf die weitere Zusammenarbeit.</p>
-            <br>
-            <div class="salutation">
-                <p>Beste Grüße{% if pay_addr %} nach {{ pay_addr.city }}{% endif %}</p>
-                <p>Ihr Team der {{ company.company_name }}</p>
-            </div>
-        {% else %}
-            <p>We thank you very much for your request and are looking forward to further business with you.</p>
-            <br>
-            <div class="salutation">
-                <p>Best regards,</p>
-                <p>Your team at {{ company.company_name }}</p>
-            </div>
-        {%- endif %}
-    </div>
-    <br>
+    {% if doc.terms and (doc.terms | striptags) %}
+        <br>
+        {{ doc.terms }}
+    {% endif %}
 </div>
 
 <!-- FOOTER -->

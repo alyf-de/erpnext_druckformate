@@ -25,14 +25,15 @@
 
     #sender {
         position: relative;
-        font-size: 75%;
+        font-size: 50%;
         height: 17.7mm;
+        display: table-cell;
+        vertical-align: middle;
     }
 
     #sender p {
         position: absolute;
         width: 85mm;
-        bottom: 0;
     }
 
     #address {
@@ -47,18 +48,12 @@
         margin-top: 5mm;
     }
 
-    #contact > table {
-        width: 100%;
-    }
-
     #contact td {
         padding: 1.5px !important;
     }
 
     #subject {
         margin-bottom: 2em;
-        height: 5mm;
-        font-weight: bold;
     }
 
     .din-mark {
@@ -96,7 +91,7 @@
     }
 
     .text-small {
-        font-size: 10pt;
+        font-size: 8pt;
     }
 
     .black-border {
@@ -127,17 +122,9 @@
         }
     }
 
-    .epilogue {
-        text-align: justify;
-
-        .salutation {
-            page-break-inside: avoid;
-        }
-    }
-
     .ql-editor {
-        line-height: unset;
-        font-family: unset;
+        line-height: 1.42857143;
+        font-family: Inter, "Helvetica Neue", Helvetica, Arial, "Open Sans", sans-serif; // use `var(--font-stack)` for v16+
         overflow: hidden;
 
         p {

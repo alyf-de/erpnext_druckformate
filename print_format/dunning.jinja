@@ -1,0 +1,176 @@
+<style>
+    .print-format {
+        margin-left: 0mm;
+        margin-right: 0mm;
+        margin-top: 10mm;
+        margin-bottom: 60mm;
+        font-size: 10pt;
+    }
+</style>
+
+{% set sales_invoice = frappe.get_doc("Sales Invoice", doc.sales_invoice) %}
+{% set company = frappe.get_doc("Company", doc.company) %}
+{% set cmp_addr = frappe.get_doc("Address", sales_invoice.company_address) if sales_invoice.company_address else None %}
+{% set pay_addr = frappe.get_doc("Address", sales_invoice.customer_address) %}
+
+{% if doc.contact_person %}
+    {% set contact = frappe.get_doc("Contact", sales_invoice.contact_person) %}
+{% endif %}
+
+<!-- HEAD -->
+<div id="header">
+    <div class="letter-head">
+        {{ letter_head }}
+    </div>
+</div>
+
+<div class="contact-row">
+    <div id="address">
+        <div id="sender">
+            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
+                {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
+                {{ cmp_addr.pincode }} {{ cmp_addr.city }}
+                {% if cmp_addr.country != pay_addr.country -%}
+                    &#183; {{ cmp_addr.country | upper }}
+                {%- endif %}
+            </p>
+        </div>
+        {{ sales_invoice.customer_name }}<br />
+        {% if contact %}
+                {%- if contact.salutation -%}
+                    {{ _(contact.salutation) }}
+                {%- endif %}
+                {%- if contact.salutation in ["Hr.", "Herr", "Mr"] and frappe.lang == "de" %}n{% endif %}
+                {{ contact.first_name }} {{ contact.last_name }}<br>
+        {% endif %}
+        {{ sales_invoice.address_display }}
+    </div>
+
+    <div id="contact">
+        <table class="w-100 text-small">
+            <colgroup>
+                <col style="width: 25mm">
+                <col style="width: 50mm">
+            </colgroup>
+
+            <tbody>
+                {% if company.phone_no %}
+                <tr>
+                    <td>{{ _("Phone") }}:</td>
+                    <td class="text-right">{{ company.phone_no }}</td>
+                </tr>
+                {% endif %}
+
+                {% if company.email %}
+                <tr>
+                    <td>{{ _("Email") }}:</td>
+                    <td class="text-right">{{ company.email }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>{{ _("Date") }}:</td>
+                    <td class="text-right">{{ frappe.utils.formatdate(doc.posting_date, "long") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _("Our Reference") }}</td>
+                    <td class="text-right">{{ doc.name }}</td>
+                </tr>
+                {% if sales_invoice.po_no %}
+                <tr>
+                    <td>{{ _("Your PO No.") }}:</td>
+                    <td class="text-right">{{ sales_invoice.po_no }}</td>
+                </tr>
+                {% endif %}
+                {% if sales_invoice.tax_id %}
+                <tr>
+                    <td>{{ _("Your Tax ID") }}:</td>
+                    <td class="text-right">{{ sales_invoice.tax_id }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="faltmarke-1" class="din-mark"></div>
+<div id="lochmarke" class="din-mark"></div>
+<div id="faltmarke-2" class="din-mark"></div>
+
+<!-- CONTENT -->
+<div id="text">
+    <div id="subject">
+        <strong>{{ doc.dunning_type }}</strong><br>
+    </div>
+
+    {% if doc.body_text and (doc.body_text | striptags) %}
+    {{ doc.body_text or "" }}
+    <br>
+    {% endif %}
+
+    <table class="w-100 text-small">
+        <thead class="black-border">
+            <tr>
+                <th style="width: 5%">{{ _("Sr") }}</th>
+                <th style="width: 25%">{{ _("Invoice Number") }}</th>
+                <th style="width: 20%">{{ _("Due Date") }}</th>
+                <th style="width: 25%">{{ _("Overdue Days") }}</th>
+                <th style="width: 25%" class="text-right">{{ _("Outstanding Amount") }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>{{ doc.sales_invoice }}</td>
+                <td>{{ doc.get_formatted("due_date") }}</td>
+                <td>{{ doc.get_formatted("overdue_days") }}</td>
+                <td class="text-right">{{ doc.get_formatted("outstanding_amount") }}</td>
+            </tr>
+        </tbody>
+
+        <tfoot class="black-border">
+            {% if doc.rate_of_interest -%}
+                <tr>
+                    <td></td>
+                    <td>{{ _("Interest") }} {{ doc.get_formatted("rate_of_interest") }} % p.a.</td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">{{ doc.get_formatted("interest_amount") }}</td>
+                </tr>
+            {% endif %}
+            {% if doc.dunning_fee -%}
+                <tr>
+                    <td></td>
+                    <td>{{ _("Dunning Fee") }}</td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">{{ doc.get_formatted("dunning_fee") }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td></td>
+                <td>
+                    <strong>{{ _("Grand Total") }}</strong>
+                </td>
+                <td></td>
+                <td></td>
+                <td class="text-right"><strong>{{ doc.get_formatted("grand_total") }}</strong>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    {% if doc.closing_text and (doc.closing_text | striptags) %}
+        <br>
+        {{ doc.closing_text }}
+    {% endif %}
+</div>
+
+<!-- FOOTER -->
+<div id="footer-html" class="visible-pdf">
+    <p id="pagenum">
+        {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+    </p>
+    <div class="print-format-footer">
+         {{ footer }}
+    </div>
+</div>
