@@ -59,6 +59,18 @@ When you change one of the templates, just this one template will be synced to t
 
 When you change the SCSS file, all templates will be synced, since they all use the same CSS.
 
+### Windows compatibility
+
+On Windows, the sass compilation from Python might not work. This can be possibly fixed by editing `update.py` like this:
+
+```diff
+def get_css(input_path: Path) -> str:
+    return run(
+-        ["sass", "--style=compressed", input_path], check=True, capture_output=True
++        ["sass", "--style=compressed", input_path], check=True, capture_output=True, shell=True
+    ).stdout.decode()
+```
+
 ## Einrichtung
 
 1. Neuen **Letter Head** (dt. Briefkopf) erstellen
