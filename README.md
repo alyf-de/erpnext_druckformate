@@ -31,7 +31,8 @@ The script `update.py` can be used to automatically update your print formats in
 2. Activate the virtual environment:
 
     ```
-    source env/bin/activate
+    source env/bin/activate # Linux / MacOS
+    env\Scripts\activate # Windows
     ```
 
 3. Install dependencies:
