@@ -3,7 +3,7 @@
         margin-left: 0mm;
         margin-right: 0mm;
         margin-top: 10mm;
-        margin-bottom: 60mm;
+        margin-bottom: 45mm;
         font-size: 10pt;
     }
 </style>
@@ -201,10 +201,12 @@
 
 <!-- FOOTER -->
 <div id="footer-html" class="visible-pdf">
-    <p id="pagenum">
-        {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
-    </p>
-    <div class="print-format-footer">
-        {{ footer }}
+    <div class="letter-head-footer">
+        <p id="pagenum">
+            {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+        </p>
+        <div class="print-format-footer">
+            {{ footer }}
+        </div>
     </div>
 </div>
