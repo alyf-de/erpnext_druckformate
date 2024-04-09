@@ -135,7 +135,7 @@
     </table>
 
     {% if doc.incoterm %}
-        <p>{{ _("Terms of delivery") }}: {{ doc.incoterm }}{% if doc.named_place %} {{ doc.named_place }}{% endif %}</p><br>
+        <p>{{ _("Terms of delivery") }}: Incoterms® 2020 {{ doc.incoterm }}{% if doc.named_place %} {{ doc.named_place }}{% endif %}</p><br>
     {% endif %}
 
     {% if doc.terms and (doc.terms | striptags) %}
