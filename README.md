@@ -86,7 +86,26 @@ def get_css(input_path: Path) -> str:
    1. Den im vorigen Schritt erstellten **Letter Head** als "Default Letter Head" hinterlegen.
    2. Eine Adresse für das Unternehmen hinzufügen. Diese erscheint im Druckformat als Absender.
 
-3. **Address Templates** für die Zielländer anlegen.
+3. **Address Template** für die Zielländer anlegen. Der Einfachheit halber kann ein **Address Template** für das eigene Land und ein weiteres für alle anderen Länder angelegt werden.
+
+    **Germany**:
+
+    ```jinja
+    {{ address_line1 }}<br>
+    {% if address_line2 %}{{ address_line2 }}<br>{% endif -%}
+    {{ pincode }} {{ city }}<br>
+    ```
+
+    **All Countries** (_Is Default_ aktivieren):
+
+    ```jinja
+    {{ address_line1 }}<br>
+    {% if address_line2 %}{{ address_line2 }}<br>{% endif -%}
+    {% if pincode %}{{ pincode }} {% endif -%}{{ city }}<br>
+    {% if state %}{{ state }}<br>{% endif -%}
+    {{ country | upper }}
+    ```
+
 4. **Print Format** (dt. Druckformat) für **Quotation** (dt. Angebot), **Sales Invoice** (dt. Verkaufsrechnung) und **Sales Order** (dt. Auftrag) anlegen. Hierzu den Inhalt der jeweiligen Datei aus dem Order `print_format` und das CSS aus `print_style/print_style.css` kopieren.
 
     ![Print Format](docs/print_format.png)
