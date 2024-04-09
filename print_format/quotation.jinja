@@ -217,6 +217,10 @@
         </tfoot>
     </table>
 
+    {% if doc.incoterm %}
+        <p>{{ _("Terms of delivery") }}: {{ doc.incoterm }}{% if doc.named_place %} {{ doc.named_place }}{% endif %}</p><br>
+    {% endif %}
+
     {% if doc.terms and (doc.terms | striptags) %}
         <br>
         {{ doc.terms }}
