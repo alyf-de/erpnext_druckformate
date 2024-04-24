@@ -115,27 +115,17 @@
                     <!-- <td>{{ n.get_formatted("discount_amount") }}</td> -->
                     <td class="text-right">{{ n.get_formatted("amount") }}</td>
                 </tr>
-
-                {% set paragraphs = n.description.split("<p>") %}
-                {# the first paragraph is always an empty div, skip that #}
-                {% for p in paragraphs[1:] %}
-                    <tr class="
-                        {{ 'no-bottom-padding' if loop.first and loop.nextitem else '' }}
-                        {{ 'no-top-padding' if loop.previtem and loop.last else '' }}
-                        {{ 'no-y-padding' if loop.nextitem and loop.previtem else '' }}
-                    ">
-                        <td></td>
-                        <td colspan="4">
-                            <div class="ql-editor">{{ p.removesuffix("</p>") }}</div>
-                            {% if loop.last and n.prevdoc_docname %}
-                                <!-- (Angebot: A-2020-001) -->
-                                ({{ _("Quotation") }}: {{ n.prevdoc_docname }})
-                            {% endif %} 
-                        </td>
-                        <td></td>
-                    </tr>
-                {% endfor %}
-
+                <tr>
+                    <td></td>
+                    <td colspan="4">
+                        {{ n.description }}
+                        {% if n.prevdoc_docname %}
+                            <!-- Angebot: A-2020-001 -->
+                            ({{ _("Quotation") }}: {{ n.prevdoc_docname }})
+                        {% endif %}
+                    </td>
+                    <td></td>
+                </tr>
             {% endfor %}
         </tbody>
 

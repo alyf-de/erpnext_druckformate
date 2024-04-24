@@ -118,30 +118,6 @@
                     </td>
                     <td></td>
                 </tr>
-
-                {% set paragraphs = n.description.split("<p>") %}
-                {# the first paragraph is always an empty div, skip that #}
-                {% for p in paragraphs[1:] %}
-                    <tr class="
-                        {{ 'no-bottom-padding' if loop.first and loop.nextitem else '' }}
-                        {{ 'no-top-padding' if loop.previtem and loop.last else '' }}
-                        {{ 'no-y-padding' if loop.nextitem and loop.previtem else '' }}
-                    ">
-                        <td></td>
-                        <td colspan="2">
-                            <div class="ql-editor">{{ p.removesuffix("</p>") }}</div>
-
-                            {% if loop.last %}
-                                {{ _("Our Part No.: {0}").format(n.item_code) }}
-                                {% if n.supplier_part_no %}
-                                    <br>
-                                    {{ _("Your Part No.: {0}").format(n.supplier_part_no) }}
-                                {% endif %}
-                            {% endif %} 
-                        </td>
-                        <td></td>
-                    </tr>
-                {% endfor %}
             {% endfor %}
         </tbody>
 

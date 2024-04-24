@@ -112,24 +112,11 @@
             page-break-inside: avoid;
             page-break-after: auto;
         }
-
-        tr.no-y-padding td {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-        }
-
-        tr.no-top-padding td {
-            padding-top: 0 !important;
-        }
-
-        tr.no-bottom-padding td {
-            padding-bottom: 0 !important;
-        }
-
+    
         thead {
             display: table-header-group;
         }
-
+    
         tfoot {
             display: table-row-group;
         }
@@ -139,7 +126,6 @@
         line-height: 1.42857143;
         font-family: Inter, "Helvetica Neue", Helvetica, Arial, "Open Sans", sans-serif; // use `var(--font-stack)` for v16+
         overflow: hidden;
-        padding: 0 !important;
 
         p {
             margin: unset;
