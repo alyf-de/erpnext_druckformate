@@ -35,7 +35,9 @@
                 {%- endif %}
             </p>
         </div>
+        {% if frappe.db.get_value("Customer", sales_invoice.customer_name, "customer_type") == "Company"%}
         {{ sales_invoice.customer_name }}<br />
+        {% endif %}
         {% if contact %}
                 {%- if contact.salutation -%}
                     {{ _(contact.salutation) }}
