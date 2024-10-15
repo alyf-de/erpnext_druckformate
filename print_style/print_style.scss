@@ -1,17 +1,17 @@
 .print-format {
     padding: 0;
     position: relative;
+    margin-left: 0mm;
+    margin-right: 0mm;
+    margin-top: 10mm;
+    margin-bottom: 45mm;
+    font-size: 10pt;
 
     #header {
-        width: 100%;
         /* ( 45 mm - 10 mm margin ) */
         height: 35mm;
-        /* Overwrite empty header inserted by frappe */
-        margin-top: -10mm;
         overflow: hidden;
         position: relative;
-        margin-left: 25mm;
-        margin-right: 20mm;
     }
 
     .contact-row {
@@ -38,7 +38,7 @@
 
     #address {
         float: left;
-        width: 85mm;
+        width: 80mm;
         padding-left: 5mm;
     }
 
@@ -60,12 +60,13 @@
         height: 1pt;
         background-color: black;
         position: absolute;
+        left: 2mm;
     }
 
     #faltmarke-1 {
         /* ( 105 mm - 10 mm margin ) */
         top: 95mm;
-        width: 12mm;
+        width: 5mm;
     }
 
     #lochmarke {
@@ -77,13 +78,14 @@
     #faltmarke-2 {
         /* ( 210 mm - 10 mm margin ) */
         top: 200mm;
-        width: 12mm;
+        width: 5mm;
     }
 
     #text {
         margin-top: 8.46mm;
         margin-left: 25mm;
         margin-right: 20mm;
+        width: 165mm;
     }
 
     .text-right {
@@ -135,7 +137,18 @@
 
 .print-format-footer {
     margin-left: 25mm;
-    padding-right: 20mm;
+    width: 165mm;
+    margin-right: 20mm;
+}
+
+.print-format-footer-html {
+  margin-left: 25mm;
+  width: 165mm;
+  height: 20mm;
+  margin-right: 20mm;
+  margin-top: -45mm;
+  bottom: 10mm;
+  position: absolute;
 }
 
 #pagenum {
@@ -143,6 +156,8 @@
     margin-right: 20mm;
     margin-top: 4.23mm;
     margin-bottom: 4.23mm;
+    margin-left: 25mm;
+    width: 165mm;
 }
 
 body, html {
