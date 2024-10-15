@@ -101,6 +101,13 @@
 
 <!-- CONTENT -->
 <div id="text">
+    <div class="document-status">
+        {% if doc.docstatus == 0 %}
+        <span style="color: orange; font-weight: bold;">{{ _("Draft") }}</span>
+        {% elif doc.docstatus == 2 %}
+        <span style="color: red; font-weight: bold;">{{ _("Cancelled") }}</span>
+        {% endif %}
+    </div>
     <div id="subject">
         {% if doc.is_return %}
             <p><strong>{{ _("Correction Invoice") }} {{ doc.name }}</strong></p>

@@ -66,6 +66,13 @@
 
 <!-- CONTENT -->
 <div id="text">
+    <div class="document-status">
+        {% if doc.docstatus == 0 %}
+        <span style="color: orange; font-weight: bold;">{{ _("Draft") }}</span>
+        {% elif doc.docstatus == 2 %}
+        <span style="color: red; font-weight: bold;">{{ _("Cancelled") }}</span>
+        {% endif %}
+    </div>
     <div id="subject">
         <strong>{{ _("Request for Quotation") }} {{ doc.name }}</strong>
     </div>
