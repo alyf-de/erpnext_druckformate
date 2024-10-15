@@ -23,6 +23,10 @@ TemplateFile = print_format/quotation.jinja
 DocType = Sales Invoice
 TemplateFile = print_format/sales_invoice.jinja
 
+[Ausgangsrechnung kompakt]
+DocType = Sales Invoice
+TemplateFile = print_format/sales_invoice_compact.jinja
+
 [Auftragsbestätigung]
 DocType = Sales Order
 TemplateFile = print_format/sales_order.jinja
