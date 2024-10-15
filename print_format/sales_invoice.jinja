@@ -1,6 +1,6 @@
 {% set company = frappe.get_doc("Company", doc.company) %}
 {% set cmp_addr = frappe.get_doc("Address", doc.company_address) if doc.company_address else None %}
-{% set pay_addr = frappe.get_doc("Address", doc.customer_address) %}
+{% set pay_addr = frappe.get_doc("Address", doc.customer_address) if doc.customer_address else None %}
 
 {% if doc.contact_person %}
     {% set contact = frappe.get_doc("Contact", doc.contact_person) %}
