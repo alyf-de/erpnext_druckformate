@@ -1,12 +1,15 @@
 .print-format {
     padding: 0;
     position: relative;
+    margin-left: 0mm;
+    margin-right: 0mm;
+    margin-top: 10mm;
+    margin-bottom: 45mm;
+    font-size: 10pt;
 
     #header {
         /* ( 45 mm - 10 mm margin ) */
         height: 35mm;
-        /* Overwrite empty header inserted by frappe */
-        margin-top: -10mm;
         overflow: hidden;
         position: relative;
         margin-left: 25mm;
@@ -98,6 +101,7 @@
         margin-top: 8.46mm;
         margin-left: 25mm;
         margin-right: 20mm;
+        width: 165mm;
     }
 
     .text-right {
@@ -155,7 +159,18 @@
 
 .print-format-footer {
     margin-left: 25mm;
-    padding-right: 20mm;
+    width: 165mm;
+    margin-right: 20mm;
+}
+
+.print-format-footer-html {
+  margin-left: 25mm;
+  width: 165mm;
+  height: 20mm;
+  margin-right: 20mm;
+  margin-top: -45mm;
+  bottom: 10mm;
+  position: absolute;
 }
 
 #pagenum {
@@ -163,6 +178,8 @@
     margin-right: 20mm;
     margin-top: 4.23mm;
     margin-bottom: 4.23mm;
+    margin-left: 25mm;
+    width: 165mm;
 }
 
 body, html {

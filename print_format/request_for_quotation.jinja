@@ -1,13 +1,3 @@
-<style>
-    .print-format {
-        margin-left: 0mm;
-        margin-right: 0mm;
-        margin-top: 10mm;
-        margin-bottom: 45mm;
-        font-size: 10pt;
-    }
-</style>
-
 {% set bill_addr = frappe.get_doc("Address", doc.company_address) if doc.company_address else None %}
 {% set company = frappe.get_doc("Company", doc.company) %}
 
@@ -138,10 +128,13 @@
 <!-- FOOTER -->
 <div id="footer-html" class="visible-pdf">
     <div class="letter-head-footer">
-        <p id="pagenum">
+        <p id="pagenum" class="visible-pdf">
             {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
         </p>
-        <div class="print-format-footer">
+        <div class="print-format-footer visible-pdf">
+            {{ footer }}
+        </div>
+        <div class="print-format-footer-html hidden-pdf">
             {{ footer }}
         </div>
     </div>
