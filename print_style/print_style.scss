@@ -51,6 +51,21 @@
         padding: 1.5px !important;
     }
 
+    .document-status {
+        font-size: 14pt;
+        font-weight: bold;
+        text-align: center;
+        text-transform: uppercase;
+
+        &.draft {
+            color: orange;
+        }
+
+        &.cancelled {
+            color: red;
+        }
+    }
+
     #subject {
         margin-bottom: 2em;
     }
