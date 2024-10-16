@@ -90,15 +90,25 @@
             {% endif %}
 
             {% if doc.from_date and doc.to_date %}
+                {% set from_date = doc.from_date %}
+                {% set to_date = doc.to_date %}
+            {% endif %}
+            {% set timesheet = frappe.get_doc("Timesheet", doc.timesheets.time_sheet)%}
+            {% if timesheet.start_date and timesheet.end_date %}
+                {% set from_date = timesheet.start_date %}
+                {% set to_date = timesheet.end_date %}
+            {% endif %}
+            
+            {% if from_date and to_date %}
             <tr>
                 <td>{{ _("Performance Period") }}:</td>
                 {# If the year matches (first 4 chars in ISO-string), omit it for from_date #}
-                {% if doc.from_date.year is defined %}
-                    {% set date_format = "dd.mm." if doc.from_date.year == doc.to_date.year else "dd.mm.yy" %}
+                {% if from_date.year is defined %}
+                    {% set date_format = "dd.mm." if from_date.year == to_date.year else "dd.mm.yy" %}
                 {% else %}
-                    {% set date_format = "dd.mm." if doc.from_date[:4] == doc.to_date[:4] else "dd.mm.yy" %}
+                    {% set date_format = "dd.mm." if from_date[:4] == to_date[:4] else "dd.mm.yy" %}
                 {% endif %}
-                <td class="text-right">{{ frappe.utils.formatdate(doc.from_date, date_format) }} - {{ frappe.utils.formatdate(doc.to_date, "dd.mm.yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(from_date, date_format) }} - {{ frappe.utils.formatdate(to_date, "dd.mm.yyyy") }}</td>
             </tr>
             {% endif %}
         </table>
