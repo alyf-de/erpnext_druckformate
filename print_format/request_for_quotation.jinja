@@ -126,16 +126,21 @@
 </div>
 
 <!-- FOOTER -->
-<div id="footer-html" class="visible-pdf">
+<div id="footer-html">
     <div class="letter-head-footer">
-        <p id="pagenum" class="visible-pdf">
-            {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
-        </p>
         <div class="print-format-footer visible-pdf">
+            <div id="pagenum">
+                {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+            </div>
             {{ footer }}
         </div>
+
         <div class="print-format-footer-html hidden-pdf">
+            <div id="pagenum">
+                {{ _("Page {0} of {1}").format(1, "n") }}
+            </div>
             {{ footer }}
         </div>
     </div>
 </div>
+

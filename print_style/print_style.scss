@@ -164,22 +164,18 @@
 }
 
 .print-format-footer-html {
-  margin-left: 25mm;
-  width: 165mm;
-  height: 20mm;
-  margin-right: 20mm;
-  margin-top: -45mm;
-  bottom: 10mm;
-  position: absolute;
+    margin-left: 25mm;
+    width: 165mm;
+    height: calc(20mm + 2 * 4.23mm + 1em);
+    margin-right: 20mm;
+    bottom: 10mm;
+    position: absolute;
 }
 
 #pagenum {
     text-align: right;
-    margin-right: 20mm;
     margin-top: 4.23mm;
     margin-bottom: 4.23mm;
-    margin-left: 25mm;
-    width: 165mm;
 }
 
 body, html {
