@@ -2,8 +2,6 @@
     .print-format {
         margin-left: 0mm;
         margin-right: 0mm;
-        margin-top: 10mm;
-        margin-bottom: 45mm;
         font-size: 10pt;
     }
 </style>
@@ -17,10 +15,8 @@
 {% endif %}
 
 <!-- HEAD -->
-<div id="header">
-    <div class="letter-head">
-        {{ letter_head }}
-    </div>
+<div id="header-html" class="hidden-pdf">
+    {{ letter_head }}
 </div>
 
 <div class="contact-row">
