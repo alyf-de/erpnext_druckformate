@@ -103,7 +103,7 @@
         width: 100%;
     }
 
-    table {
+    table:not(.footer-table) {
         /* --- Nice page breaks for tables --- */
         page-break-inside: auto;
         table-layout: fixed;

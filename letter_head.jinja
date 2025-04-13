@@ -3,6 +3,11 @@
 {% set address = frappe.get_doc("Address", company_address_name) if company_address_name else None %}
 
 <table class="footer-table">
+    <colgroup>
+        <col style="width: 55mm;">
+        <col style="width: 55mm;">
+        <col style="width: 55mm;">
+    </colgroup>
     <tbody>
         <tr>
             <td>{{ company.company_name }}</td>
