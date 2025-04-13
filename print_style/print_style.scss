@@ -114,8 +114,14 @@
     
         thead {
             display: table-header-group;
+
+            th {
+                background-color: #eee;
+                font-weight: bold;
+                color: black;
+            }
         }
-    
+
         tfoot {
             display: table-row-group;
         }
