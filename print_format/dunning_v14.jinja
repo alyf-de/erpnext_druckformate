@@ -1,4 +1,4 @@
-<!-- For the doctype layout of dunning starting from v15 -->
+<!-- For the doctype layout of dunning up to v14 -->
 <style>
     .print-format {
         margin-left: 0mm;
@@ -9,13 +9,13 @@
     }
 </style>
 
+{% set sales_invoice = frappe.get_doc("Sales Invoice", doc.sales_invoice) %}
 {% set company = frappe.get_doc("Company", doc.company) %}
-{% set customer = frappe.get_doc("Customer", doc.customer) %}
-{% set cmp_addr = frappe.get_doc("Address", doc.company_address) if doc.company_address else None %}
-{% set pay_addr = frappe.get_doc("Address", doc.customer_address) if doc.customer_address else None %}
+{% set cmp_addr = frappe.get_doc("Address", sales_invoice.company_address) if sales_invoice.company_address else None %}
+{% set pay_addr = frappe.get_doc("Address", sales_invoice.customer_address) %}
 
 {% if doc.contact_person %}
-    {% set contact = frappe.get_doc("Contact", doc.contact_person) %}
+    {% set contact = frappe.get_doc("Contact", sales_invoice.contact_person) %}
 {% endif %}
 
 <!-- HEAD -->
@@ -28,17 +28,15 @@
 <div class="contact-row">
     <div id="address">
         <div id="sender">
-            {% if cmp_addr %}
-                <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
-                    {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
-                    {{ cmp_addr.pincode }} {{ cmp_addr.city }}
-                    {% if pay_addr and cmp_addr.country != pay_addr.country -%}
-                        &#183; {{ cmp_addr.country | upper }}
-                    {%- endif %}
-                </p>
-            {% endif %}
+            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
+                {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
+                {{ cmp_addr.pincode }} {{ cmp_addr.city }}
+                {% if cmp_addr.country != pay_addr.country -%}
+                    &#183; {{ cmp_addr.country | upper }}
+                {%- endif %}
+            </p>
         </div>
-        {{ doc.customer_name }}<br />
+        {{ sales_invoice.customer_name }}<br />
         {% if contact %}
                 {%- if contact.salutation -%}
                     {{ _(contact.salutation) }}
@@ -46,9 +44,7 @@
                 {%- if contact.salutation in ["Hr.", "Herr", "Mr"] and frappe.lang == "de" %}n{% endif %}
                 {{ contact.first_name }} {{ contact.last_name }}<br>
         {% endif %}
-        {% if pay_addr %}
-            {{ doc.address_display }}
-        {% endif %}
+        {{ sales_invoice.address_display }}
     </div>
 
     <div id="contact">
@@ -80,10 +76,16 @@
                     <td>{{ _("Our Reference") }}</td>
                     <td class="text-right">{{ doc.name }}</td>
                 </tr>
-                {% if customer.tax_id %}
+                {% if sales_invoice.po_no %}
+                <tr>
+                    <td>{{ _("Your PO No.") }}:</td>
+                    <td class="text-right">{{ sales_invoice.po_no }}</td>
+                </tr>
+                {% endif %}
+                {% if sales_invoice.tax_id %}
                 <tr>
                     <td>{{ _("Your Tax ID") }}:</td>
-                    <td class="text-right">{{ customer.tax_id }}</td>
+                    <td class="text-right">{{ sales_invoice.tax_id }}</td>
                 </tr>
                 {% endif %}
             </tbody>
@@ -117,41 +119,43 @@
             </tr>
         </thead>
         <tbody>
-            {% for overdue_payment in doc.overdue_payments %}
             <tr>
                 <td>1</td>
-                <td>{{ overdue_payment.sales_invoice }}</td>
-                <td>{{ overdue_payment.due_date }}</td>
-                <td>{{ overdue_payment.overdue_days }}</td>
-                <td class="text-right">{{ overdue_payment.outstanding }}</td>
+                <td>{{ doc.sales_invoice }}</td>
+                <td>{{ doc.get_formatted("due_date") }}</td>
+                <td>{{ doc.get_formatted("overdue_days") }}</td>
+                <td class="text-right">{{ doc.get_formatted("outstanding_amount") }}</td>
             </tr>
-            {% endfor %}
         </tbody>
 
         <tfoot class="black-border">
-            <tr>
-                <td></td>
-                <td colspan="3">{{ _("Total Outstanding") }}</td>
-                <td class="text-right">{{ doc.get_formatted("total_outstanding") }}</td>
-            </tr>
-            {% if doc.total_interest -%}
+            {% if doc.rate_of_interest -%}
                 <tr>
                     <td></td>
-                    <td colspan="3">{{ _("Interest") }} {{ doc.get_formatted("rate_of_interest") }} % p.a.</td>
-                    <td class="text-right">{{ doc.get_formatted("total_interest") }}</td>
+                    <td>{{ _("Interest") }} {{ doc.get_formatted("rate_of_interest") }} % p.a.</td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">{{ doc.get_formatted("interest_amount") }}</td>
                 </tr>
             {% endif %}
             {% if doc.dunning_fee -%}
                 <tr>
                     <td></td>
-                    <td colspan="3">{{ _("Dunning Fee") }}</td>
+                    <td>{{ _("Dunning Fee") }}</td>
+                    <td></td>
+                    <td></td>
                     <td class="text-right">{{ doc.get_formatted("dunning_fee") }}</td>
                 </tr>
             {% endif %}
             <tr>
                 <td></td>
-                <td colspan="3"><strong>{{ _("Grand Total") }}</strong></td>
-                <td class="text-right"><strong>{{ doc.get_formatted("grand_total") }}</strong></td>
+                <td>
+                    <strong>{{ _("Grand Total") }}</strong>
+                </td>
+                <td></td>
+                <td></td>
+                <td class="text-right"><strong>{{ doc.get_formatted("grand_total") }}</strong>
+                </td>
             </tr>
         </tfoot>
     </table>
