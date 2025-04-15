@@ -119,7 +119,7 @@
         <tbody>
             {% for overdue_payment in doc.overdue_payments %}
             <tr>
-                <td>1</td>
+                <td>{{ overdue_payment.idx }}</td>
                 <td>{{ overdue_payment.sales_invoice }}</td>
                 <td>{{ overdue_payment.due_date }}</td>
                 <td>{{ overdue_payment.overdue_days }}</td>
