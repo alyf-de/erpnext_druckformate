@@ -4,6 +4,7 @@ from pathlib import Path
 from subprocess import run
 
 import typer
+from dotenv import dotenv_values
 
 from frappeclient import FrappeClient
 
@@ -19,14 +20,14 @@ def get_css(input_path: Path) -> str:
 
 
 def get_credentials(
-    config: ConfigParser,
     base_url: str | None,
     username: str | None,
     password: str | None,
 ) -> tuple[str, str, str]:
-    base_url = base_url or config.get("DEFAULT", "BaseURL")
-    username = username or config.get("DEFAULT", "User")
-    password = password or config.get("DEFAULT", "Password")
+    env = dotenv_values(".env")
+    base_url = base_url or env.get("BASE_URL")
+    username = username or env.get("USER")
+    password = password or env.get("PASSWORD")
 
     while not base_url:
         base_url = input("Base URL: ")
@@ -80,11 +81,11 @@ def main(
     config_file: str = None,
     only_template: str = None,
 ):
-    config = ConfigParser()
-    config.read(abspath(config_file or "config.ini"))
-    base_url, username, password = get_credentials(config, username, password, base_url)
+    base_url, username, password = get_credentials(username, password, base_url)
     client = FrappeClient(url=base_url, username=username, password=password)
 
+    config = ConfigParser()
+    config.read(abspath(config_file or "config.ini"))
     css = get_css(abspath(config.get("DEFAULT", "ScssFile")))
     for print_format_name in config.sections():
         file_path = abspath(config.get(print_format_name, "TemplateFile"))

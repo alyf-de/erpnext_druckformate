@@ -41,7 +41,7 @@ The script `update.py` can be used to automatically update your print formats in
     pip install -r requirements.txt
     ```
 
-4. Set your BaseURL, User and Password in `config.ini`
+4. Copy `.env.example` into `.env` and set your `BASE_URL`, `USER` and `PASSWORD`.
 
 ### Usage
 

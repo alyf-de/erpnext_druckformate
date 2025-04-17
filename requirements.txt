@@ -1,3 +1,4 @@
 requests
 pylint
 typer
+python-dotenv
