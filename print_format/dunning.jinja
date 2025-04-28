@@ -121,9 +121,9 @@
             <tr>
                 <td>{{ overdue_payment.idx }}</td>
                 <td>{{ overdue_payment.sales_invoice }}</td>
-                <td>{{ overdue_payment.due_date }}</td>
+                <td>{{ frappe.utils.formatdate(overdue_payment.due_date, "short") }}</td>
                 <td>{{ overdue_payment.overdue_days }}</td>
-                <td class="text-right">{{ overdue_payment.outstanding }}</td>
+                <td class="text-right">{{ overdue_payment.get_formatted("outstanding") }}</td>
             </tr>
             {% endfor %}
         </tbody>
