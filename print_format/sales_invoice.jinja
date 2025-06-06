@@ -1,13 +1,3 @@
-<style>
-    .print-format {
-        margin-left: 0mm;
-        margin-right: 0mm;
-        margin-top: 10mm;
-        margin-bottom: 45mm;
-        font-size: 10pt;
-    }
-</style>
-
 {% set company = frappe.get_doc("Company", doc.company) %}
 {% set cmp_addr = frappe.get_doc("Address", doc.company_address) if doc.company_address else None %}
 {% set pay_addr = frappe.get_doc("Address", doc.customer_address) if doc.customer_address else None %}
@@ -90,15 +80,25 @@
             {% endif %}
 
             {% if doc.from_date and doc.to_date %}
+                {% set from_date = doc.from_date %}
+                {% set to_date = doc.to_date %}
+            {% endif %}
+            {% set timesheet = frappe.get_doc("Timesheet", doc.timesheets.time_sheet)%}
+            {% if timesheet.start_date and timesheet.end_date %}
+                {% set from_date = timesheet.start_date %}
+                {% set to_date = timesheet.end_date %}
+            {% endif %}
+            
+            {% if from_date and to_date %}
             <tr>
                 <td>{{ _("Performance Period") }}:</td>
                 {# If the year matches (first 4 chars in ISO-string), omit it for from_date #}
-                {% if doc.from_date.year is defined %}
-                    {% set date_format = "dd.mm." if doc.from_date.year == doc.to_date.year else "dd.mm.yy" %}
+                {% if from_date.year is defined %}
+                    {% set date_format = "dd.mm." if from_date.year == to_date.year else "dd.mm.yy" %}
                 {% else %}
-                    {% set date_format = "dd.mm." if doc.from_date[:4] == doc.to_date[:4] else "dd.mm.yy" %}
+                    {% set date_format = "dd.mm." if from_date[:4] == to_date[:4] else "dd.mm.yy" %}
                 {% endif %}
-                <td class="text-right">{{ frappe.utils.formatdate(doc.from_date, date_format) }} - {{ frappe.utils.formatdate(doc.to_date, "dd.mm.yyyy") }}</td>
+                <td class="text-right">{{ frappe.utils.formatdate(from_date, date_format) }} - {{ frappe.utils.formatdate(to_date, "dd.mm.yyyy") }}</td>
             </tr>
             {% endif %}
         </table>
@@ -111,6 +111,11 @@
 
 <!-- CONTENT -->
 <div id="text">
+    {% if doc.docstatus == 0 %}
+        <div class="document-status draft">{{ _("Draft") }}</div>
+    {% elif doc.docstatus == 2 %}
+        <div class="document-status cancelled">{{ _("Cancelled") }}</div>
+    {% endif %}
     <div id="subject">
         {% if doc.is_return %}
             <p><strong>{{ _("Correction Invoice") }} {{ doc.name }}</strong></p>
@@ -352,12 +357,19 @@
 </div>
 
 <!-- FOOTER -->
-<div id="footer-html" class="visible-pdf">
+<div id="footer-html">
     <div class="letter-head-footer">
-        <p id="pagenum">
-            {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
-        </p>
-        <div class="print-format-footer">
+        <div class="print-format-footer visible-pdf">
+            <div id="pagenum">
+                {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+            </div>
+            {{ footer }}
+        </div>
+
+        <div class="print-format-footer-html hidden-pdf">
+            <div id="pagenum">
+                {{ _("Page {0} of {1}").format(1, "n") }}
+            </div>
             {{ footer }}
         </div>
     </div>
