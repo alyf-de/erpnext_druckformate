@@ -1,0 +1,130 @@
+<style>
+    .print-format {
+        margin-left: 0mm;
+        margin-right: 0mm;
+        margin-top: 10mm;
+        margin-bottom: 45mm;
+        font-size: 10pt;
+    }
+</style>
+
+{% set company = frappe.get_doc("Company", doc.company) %}
+{% set cmp_addr = frappe.get_doc("Address", doc.company_address) %}
+{% set recipient_addr = frappe.get_doc("Address", doc.address) if doc.address else None %}
+{% set reference = frappe.get_doc(doc.link_document_type, doc.link_name, doc.link_title) if doc.link_document_type and doc.link_name and doc.link_title else None %}
+
+
+{% if doc.contact %}
+    {% set contact = frappe.get_doc("Contact", doc.contact) %}
+{% endif %}
+
+<!-- HEAD -->
+<div id="header">
+    <div class="letter-head">
+        {{ letter_head }}
+    </div>
+</div>
+
+<div class="contact-row">
+    <div id="address">
+        {# Absenderadresse (Company) #}
+        {% if cmp_addr %}
+        <div id="sender">
+            <p>{{ cmp_addr.address_title }} &#183; {{ cmp_addr.address_line1 }} &#183;
+                {% if cmp_addr.address_line2 %}{{ cmp_addr.address_line2 }} <br>{% endif %}
+                {{ cmp_addr.pincode }} {{ cmp_addr.city }}
+                {% if recipient_addr and (cmp_addr.country != recipient_addr.country) -%}
+                    &#183; {{ cmp_addr.country | upper }}
+                {%- endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        {# Empfängeradresse (aus address-Objekt, wie von get_context bereitgestellt) #}
+        {% if recipient_addr %}
+                {{ recipient_addr.company_name or recipient_addr.name or "" }}<br>
+                {% if contact %}
+                    z.H. {{ contact.salutation }}{% if contact.salutation in ["Hr.", "Herr"] %}n{% endif %} {{ contact.first_name }} {{ contact.last_name }}<br>
+                {% endif %}
+                {{ recipient_addr.address_line1 }}<br>
+                {% if recipient_addr.address_line2 %}{{ recipient_addr.address_line2 }}<br>{% endif %}
+                {{ recipient_addr.pincode }} {{ recipient_addr.city }}<br>
+                {% if recipient_addr and (cmp_addr.country != recipient_addr.country) -%}
+                    {{ recipient_addr.country }}
+                {%- endif %}
+        {% endif %}
+    </div>
+
+    <div id="contact">
+        <table class="w-100 text-small">
+            {% if company.phone_no %}
+            <tr>
+                <td>{{ _("Phone") }}:</td>
+                <td class="text-right">{{ company.phone_no }}</td>
+            </tr>
+            {% endif %}
+
+            {% if company.email %}
+                <tr>
+                    <td>{{ _("Email") }}:</td>
+                    <td class="text-right">{{ company.email }}</td>
+                </tr>
+            {% endif %}
+
+            <tr>
+                <td>{{ _("Date") }}:</td>
+                <td class="text-right">{{ frappe.utils.formatdate(doc.date, "long") }}</td>
+            </tr>
+
+            <tr>
+                <td>{{ _("Business Letter") }}:</td>
+                <td class="text-right">{{ doc.name }}</td>
+            </tr>
+            {# Referenz #}
+            {% if reference %}
+                <tr>
+                    <td>{{ _("Reference") }}:</td>
+                    <td class="text-right">{{ reference.title }}</td>
+                </tr>
+                <tr>
+                    <td>{{ _(reference.doctype) }}:</td>
+                    <td class="text-right">{{ reference.name }}</td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+<div id="faltmarke-1" class="din-mark"></div>
+<div id="lochmarke" class="din-mark"></div>
+<div id="faltmarke-2" class="din-mark"></div>
+
+<!-- CONTENT -->
+<div id="text">
+    {% if doc.docstatus == 0 %}
+        <div class="document-status draft">{{ _("Draft") }}</div>
+    {% elif doc.docstatus == 2 %}
+        <div class="document-status cancelled">{{ _("Cancelled") }}</div>
+    {% endif %}
+    {# Betreff #}
+    <div id="subject">
+        {% if doc.subject %}
+            <p><strong>{{ doc.subject }}</strong></p>
+        {% endif %}
+    </div>
+
+    {# Hauptinhalt: content, description, notes, message, etc. #}
+    <div class="mb-3">{{ doc.content | safe }}</div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-html" class="visible-pdf">
+    <div class="letter-head-footer">
+        <p id="pagenum">
+            {{ _("Page {0} of {1}").format('<span class="page"></span>', '<span class="topage"></span>') }}
+        </p>
+        <div class="print-format-footer">
+            {{ footer }}
+        </div>
+    </div>
+</div>
