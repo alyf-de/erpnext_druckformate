@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "erpnext-druckformate-migrator"
+version = "0.1.0"
+description = "One-shot CLI that scaffolds a print_format_sources/ folder into a Frappe app from an erpnext_druckformate-style print format repo."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENCE" }
+authors = [{ name = "ALYF GmbH" }]
+keywords = ["frappe", "erpnext", "print-format", "migration", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "libsass>=0.22",
+]
+
+[project.scripts]
+frappe-pf-init = "erpnext_druckformate_migrator.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/alyf-de/erpnext_druckformate"
+Issues = "https://github.com/alyf-de/erpnext_druckformate/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/erpnext_druckformate_migrator"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/erpnext_druckformate_migrator/template_files" = "erpnext_druckformate_migrator/template_files"

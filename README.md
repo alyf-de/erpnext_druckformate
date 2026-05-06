@@ -16,9 +16,79 @@ Der folgende Befehl erzeugt die Datei `print_style.css` im Ordner `print_style`:
 sass --style=compressed print_style/print_style.scss print_style/print_style.css
 ```
 
-## Update script
+## Migrating into a Frappe app (recommended)
 
-The script `update.py` can be used to automatically update your print formats in ERPNext (without copy + paste).
+Instead of syncing print formats over REST with `update.py`, you can scaffold them directly into a Frappe app. The print formats then live in the app, are versioned with it, and are re-installed on every `bench migrate` (and `bench install-app`).
+
+### One-shot migration with `frappe-pf-init`
+
+This repo ships a CLI that takes any erpnext_druckformate-style print-format repo (this one or a fork) and scaffolds a `print_format_sources/` folder into a target Frappe app. Run it from inside the print-format repo and pass the target app's repo root:
+
+```bash
+# In a clone of this repo (or any conforming print-format repo):
+uvx --from git+https://github.com/alyf-de/erpnext_druckformate frappe-pf-init /path/to/your_frappe_app
+```
+
+What it does:
+
+- Reads `config.ini`, copies referenced templates from `print_format/` to `<app>/<app>/print_format_sources/`.
+- Compiles `print_style/*.scss` to `<app>/<app>/print_format_sources/print_formats.css` (no Node/brew dep — uses `libsass`). Output is expanded (multi-line) so it stays readable in Desk's Print Format editor.
+- Generates a Pythonic `<app>/<app>/print_format_sources/config.py` with one entry per format.
+- Drops in a small builder (`print_formats.py`) that reads the config + templates and imports them into Frappe via `import_doc`.
+- Adds `sync_print_formats` to `after_migrate` and `after_install` in `<app>/<app>/hooks.py`. Existing hook entries are preserved: a string-form value (`after_install = "..."`) is expanded to a list with both entries; an existing list is appended to. Already-present entries are detected and skipped.
+- Writes a `.synced` marker (source repo URL + commit + timestamp) for traceability.
+
+The migrator never touches `install.py` — installing the print formats on `bench install-app` is handled by the `after_install` hook entry in `hooks.py`, so it works equally well for apps that don't have an `install.py`.
+
+Flags:
+
+- `--source PATH` — point at a different print-format repo (default: current directory).
+- `--dry-run` — print the planned changes without writing.
+- `--force` — overwrite an existing `print_format_sources/` folder.
+
+### What you need in your source repo
+
+For the migrator to work, the source repo must follow this layout (this is the layout of `erpnext_druckformate` itself):
+
+- `config.ini` at the repo root — `[Section]` titles become **Print Format** names, with required `DocType` and `TemplateFile` keys.
+- `print_format/*.jinja` — the templates referenced by `config.ini`.
+- `print_style/*.scss` — one shared SCSS file (compiled into `print_formats.css` in the target).
+
+### Source-repo layout (assumed by `frappe-pf-init`)
+
+```
+<source-repo>/
+    config.ini             # [Section] DocType=... TemplateFile=print_format/foo.jinja
+    print_format/*.jinja
+    print_style/*.scss     # one shared file
+```
+
+### Target-app layout (after migration)
+
+```
+<app>/<app>/print_format_sources/
+    __init__.py
+    config.py              # generated from config.ini
+    print_formats.py       # builder + sync_print_formats() (after_migrate hook)
+    print_formats.css      # compiled from print_style/*.scss
+    *.jinja                # copied from print_format/
+    .synced                # source repo URL + commit + timestamp
+```
+
+### Post-install checklist
+
+The migrator can't move app-side helpers your templates may rely on. After running:
+
+1. **Custom Jinja helpers.** If your templates use functions like `split_quill` or other custom filters, expose them via your app's `jinja` hook (see Frappe docs).
+2. **Trim** any print formats from `config.py` that you don't want to ship (the source repo may include more than your app needs).
+3. **Run** `bench --site <site> migrate` to verify the formats land cleanly in Desk.
+4. **Note**: the migrator is one-shot — re-running against the same target requires `--force`. To pull future updates from the source repo, do a manual `git diff` of the source's `print_format/` against your `<app>/<app>/print_format_sources/`.
+
+---
+
+## Legacy: `update.py` (REST sync)
+
+The script `update.py` can be used to automatically update your print formats in ERPNext (without copy + paste). Prefer the migrator above when starting a new project; `update.py` remains useful for ad-hoc updates against a running site.
 
 ### Setup
 

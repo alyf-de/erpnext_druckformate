@@ -2,3 +2,8 @@ print_style.css
 print_style.css.map
 env
 .env
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
