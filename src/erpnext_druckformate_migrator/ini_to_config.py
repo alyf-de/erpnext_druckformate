@@ -114,7 +114,7 @@ def render_config_py(formats: dict[str, dict[str, Any]]) -> str:
         "",
         "Per format:",
         "- key            **Print Format** name (shown in Desk)",
-        "- ``DocType``    the DocType the format prints (required)",
+        "- ``DocType``    the DocType the format prints (required), get's mapped to ``doc_type`` field in print format Document",
         "- ``template``   ``*.jinja`` filename next to this module (required)",
         "- ``css``        optional override: a filename, or ``None`` for no CSS;",
         "                 omit to use ``SHARED_CSS``",
