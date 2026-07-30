@@ -36,7 +36,12 @@
             {% endif %}
         </div>
         {{ supplier.supplier_name }}<br />
-        {{ pay_addr.get_display() }}
+        {% if pay_addr.address_line1 %}{{ pay_addr.address_line1 }}<br>{% endif %}
+        {% if pay_addr.address_line2 %}{{ pay_addr.address_line2 }}<br>{% endif %}
+        {{ pay_addr.pincode }} {{ pay_addr.city }}
+        {% if bill_addr and pay_addr.country != bill_addr.country -%}
+            <br>{{ pay_addr.country | upper }}
+        {%- endif %}
     </div>
 
     <div id="contact">
