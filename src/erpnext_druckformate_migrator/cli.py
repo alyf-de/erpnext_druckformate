@@ -6,7 +6,9 @@
 Usage:
     frappe-pf-init <target_app_path> [--source SOURCE] [--dry-run] [--force]
 
-The target app path must contain ``<app>/<app>/hooks.py``. ``<app>`` is derived from the path.
+``<target_app_path>`` is the app's repo root, which must contain ``<app_name>/hooks.py``
+(e.g. pass ``~/bench/apps/my_app``, which holds ``my_app/hooks.py``). The app name is
+derived from that directory.
 """
 
 from __future__ import annotations
@@ -46,7 +48,7 @@ class TargetApp:
 class SourceRepo:
 	root: Path  # The print-format repo root (contains config.ini)
 	config_ini: Path
-	scss_path: Path  # First .scss in print_style/, if any
+	scss_path: Path | None  # The single .scss in print_style/, if any
 	templates_dir: Path  # print_format/
 
 	@property
@@ -60,6 +62,8 @@ class PlannedActions:
 
 	created_files: list[Path] = field(default_factory=list)
 	hook_messages: list[str] = field(default_factory=list)
+	# Hooks `add_hook` refused; files are already written, so this is a partial failure.
+	hook_failures: list[str] = field(default_factory=list)
 
 
 class MigrationError(RuntimeError):
@@ -74,7 +78,7 @@ class MigrationError(RuntimeError):
 def discover_target_app(target_path: Path) -> TargetApp:
 	"""Resolve ``<target_path>`` into a ``TargetApp``.
 
-	The expected layout is a Frappe app: a repo root containing ``<app>/<app>/hooks.py``.
+	The expected layout is a Frappe app repo root containing ``<app_name>/hooks.py``.
 	"""
 	target_path = target_path.resolve()
 	if not target_path.is_dir():
@@ -249,6 +253,8 @@ def materialize(
 		else:
 			result = add_hook(target.hooks_py, hook_name, target_path)
 			plan.hook_messages.append(f"{result.path}: {result.message}")
+			if not (result.changed or result.noop):
+				plan.hook_failures.append(f"{hook_name}: {result.message}")
 
 	return plan
 
@@ -278,7 +284,7 @@ def _print_summary(target: TargetApp, plan: PlannedActions, dry_run: bool) -> No
 		print("  2. Review the new files (config.py, print_formats.py, *.jinja, print_formats.css).")
 		print("  3. If your templates use custom Jinja helpers (e.g. split_quill), make sure")
 		print("     they are exposed via your app's `jinja` hooks.")
-		print(f"  4. bench --site <site> migrate    # syncs the print formats")
+		print("  4. bench --site <site> migrate    # syncs the print formats")
 		print("  5. git add . && git commit -m 'feat: scaffold print_format_sources/'")
 
 
@@ -291,7 +297,7 @@ def _build_parser() -> argparse.ArgumentParser:
 		),
 	)
 	p.add_argument("target", type=Path,
-	               help="Path to the target Frappe app's repo root (containing <app>/<app>/hooks.py)")
+	               help="Path to the target Frappe app's repo root (the dir containing <app_name>/hooks.py)")
 	p.add_argument("--source", type=Path, default=Path("."),
 	               help="Path to the source print-format repo (default: current directory)")
 	p.add_argument("--dry-run", action="store_true",
@@ -308,10 +314,20 @@ def main(argv: list[str] | None = None) -> int:
 		target = discover_target_app(args.target)
 		source = discover_source_repo(args.source)
 		plan = materialize(source, target, dry_run=args.dry_run, force=args.force)
-	except MigrationError as e:
+	except (MigrationError, ValueError, OSError) as e:
+		# ValueError also covers sass.CompileError. All of these are the user's to fix.
 		print(f"error: {e}", file=sys.stderr)
 		return 2
 	_print_summary(target, plan, dry_run=args.dry_run)
+	if plan.hook_failures:
+		print(
+			"\nerror: files were written, but hooks.py could not be wired up. "
+			"Your app will NOT sync print formats until you add these by hand:",
+			file=sys.stderr,
+		)
+		for msg in plan.hook_failures:
+			print(f"  - {msg}", file=sys.stderr)
+		return 1
 	return 0
 
 

@@ -17,7 +17,9 @@ from .config import PRINT_FORMATS, SHARED_CSS
 PRINT_FORMAT_DEFAULTS: dict[str, Any] = {
 	"print_format_type": "Jinja",
 	"disabled": 0,
-	"standard": "Yes",
+	# "Yes" would make Frappe export a .json into whichever app owns the module —
+	# ERPNext's, since we set no `module`. Sources here stay the only copy.
+	"standard": "No",
 	"custom_format": 1,
 	"align_labels_right": 0,
 	"show_section_headings": 0,
@@ -106,6 +108,7 @@ def sync_print_formats() -> None:
 	)
 
 	docs = build_print_format_docs(_package_dir())
+	_preserve_existing_creation(docs)
 	print(f"Syncing {len(docs)} print formats from sources...")
 	frappe.logger().info("Syncing %s print formats from source", len(docs))
 
@@ -121,3 +124,15 @@ def sync_print_formats() -> None:
 	finally:
 		if tmp_path:
 			Path(tmp_path).unlink(missing_ok=True)
+
+
+def _preserve_existing_creation(docs: list[dict[str, Any]]) -> None:
+	"""For each doc that already exists, copy its ``creation`` timestamp forward.
+	``import_doc`` does delete+insert (resetting ``creation`` otherwise), but
+	respects an explicit value if we set it."""
+	import frappe
+
+	for doc in docs:
+		existing = frappe.db.get_value(doc["doctype"], doc["name"], "creation")
+		if existing:
+			doc["creation"] = str(existing)

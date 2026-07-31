@@ -17,15 +17,18 @@ The output is a Pythonic ``PRINT_FORMATS`` mapping:
         ...
     }
 
+Every format shares the one compiled ``print_formats.css``. The generated builder
+still honours a per-format ``css`` key, but that is a hand-edit escape hatch in the
+target app: the INI has no say in it, since the migrator only copies the stylesheet
+it compiled.
+
 INI keys handled specially (not propagated into ``fields``):
 - ``DocType`` -> top-level ``DocType``
 - ``TemplateFile`` -> top-level ``template`` (filename only; the source's
   ``print_format/`` prefix is stripped)
-- ``CssFile`` -> top-level ``css`` (filename only). If absent, the format
-  uses the shared ``print_formats.css``.
 - ``ScssFile`` and ``IsStandard`` (DEFAULT-only legacy keys) are ignored;
-  the migrator compiles SCSS itself and the Print Format ``standard`` field
-  defaults to "Yes" in the generated builder.
+  the migrator compiles SCSS itself and the builder always writes
+  ``standard = "No"``.
 
 Any other INI key is treated as a Print Format field override and goes under ``fields``.
 Empty values become ``None`` (clears the builder default).
@@ -39,9 +42,6 @@ from typing import Any
 
 # DEFAULT-only legacy keys from update.py-era configs; ignored by the new builder.
 LEGACY_DEFAULT_KEYS = frozenset({"scssfile", "isstandard"})
-
-# Per-section reserved keys (handled specially, not propagated into ``fields``).
-RESERVED_SECTION_KEYS = frozenset({"doctype", "templatefile", "cssfile"})
 
 
 def _coerce(raw: str) -> Any:
@@ -85,15 +85,18 @@ def parse_ini(ini_path: Path) -> dict[str, dict[str, Any]]:
         if not template_file:
             raise ValueError(f"[{section}] missing TemplateFile")
 
-        css_file = items.pop("cssfile", None)
+        if "cssfile" in items:
+            # Would emit a `css` reference to a file we never copy.
+            raise ValueError(
+                f"[{section}] CssFile is not supported: every format shares the CSS "
+                f"compiled from print_style/*.scss. Set `css` by hand in the generated "
+                f"config.py if you really need a per-format override."
+            )
 
         spec: dict[str, Any] = {
             "DocType": doc_type,
             "template": _strip_template_prefix(template_file),
         }
-        if css_file is not None:
-            css_clean = css_file.strip()
-            spec["css"] = None if css_clean == "" else _strip_template_prefix(css_clean)
 
         # Whatever remains is a Print Format field override.
         if items:
@@ -114,10 +117,11 @@ def render_config_py(formats: dict[str, dict[str, Any]]) -> str:
         "",
         "Per format:",
         "- key            **Print Format** name (shown in Desk)",
-        "- ``DocType``    the DocType the format prints (required), get's mapped to ``doc_type`` field in print format Document",
+        "- ``DocType``    the DocType the format prints (required); maps to the Print Format ``doc_type`` field",
         "- ``template``   ``*.jinja`` filename next to this module (required)",
-        "- ``css``        optional override: a filename, or ``None`` for no CSS;",
-        "                 omit to use ``SHARED_CSS``",
+        "- ``css``        optional hand-added override: a filename next to this module, or",
+        "                 ``None`` for no CSS. Omit to use ``SHARED_CSS`` (the default);",
+        "                 if you add one, drop the file in this folder yourself.",
         "- ``fields``     optional dict of additional **Print Format** field overrides",
         "                 (e.g. ``module``, ``pdf_generator``, ``default_print_language``,",
         "                 margins, page number, ...)",
@@ -133,8 +137,6 @@ def render_config_py(formats: dict[str, dict[str, Any]]) -> str:
         lines.append(f"\t{_py_str(name)}: {{")
         lines.append(f'\t\t"DocType": {_py_str(spec["DocType"])},')
         lines.append(f'\t\t"template": {_py_str(spec["template"])},')
-        if "css" in spec:
-            lines.append(f'\t\t"css": {_py_value(spec["css"])},')
         if fields := spec.get("fields"):
             lines.append("\t\t\"fields\": {")
             for fkey, fval in fields.items():

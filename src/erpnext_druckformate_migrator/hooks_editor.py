@@ -51,8 +51,8 @@ def add_hook(hooks_path: Path, hook_name: str, target: str) -> EditResult:
 	existing = _find_assignment(tree, hook_name)
 
 	if existing is None:
-		new_line = f'{hook_name} = ["{target}"]'
-		new_text = _insert_new_line(text, new_line)
+		new_line = _format_list_assignment(hook_name, [target])
+		new_text = _insert_new_line(text, tree, new_line)
 		hooks_path.write_text(new_text, encoding="utf-8")
 		return EditResult(
 			hooks_path, changed=True, noop=False,
@@ -61,7 +61,7 @@ def add_hook(hooks_path: Path, hook_name: str, target: str) -> EditResult:
 
 	try:
 		current_value = ast.literal_eval(existing.value)
-	except ValueError:
+	except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
 		return EditResult(
 			hooks_path, changed=False, noop=False,
 			message=(
@@ -144,24 +144,22 @@ def _splice(text: str, node: ast.Assign, replacement: str) -> str:
 	return before + replacement + suffix + after
 
 
-def _insert_new_line(text: str, line: str) -> str:
-	"""Insert ``line`` after the last top-level hook-style assignment, or at EOF."""
-	# Try to anchor near other hook-like assignments for readability.
+def _insert_new_line(text: str, tree: ast.Module, line: str) -> str:
+	"""Insert ``line`` after an existing hook-style assignment, or at EOF.
+
+	The anchor comes from the AST, not from matching text: a multi-line value
+	(``after_migrate = [\\n ... \\n]``) must be stepped over as a whole, or the
+	new assignment lands inside the list and breaks the file.
+	"""
 	for anchor in ("after_install", "after_migrate", "app_name"):
-		idx = _line_index(text, anchor)
-		if idx is not None:
-			# Insert after that line.
-			lines = text.splitlines(keepends=True)
-			lines.insert(idx + 1, line + "\n")
-			return "".join(lines)
+		node = _find_assignment(tree, anchor)
+		if node is None:
+			continue
+		lines = text.splitlines(keepends=True)
+		if lines and not lines[-1].endswith("\n"):
+			lines[-1] += "\n"  # else an anchor at EOF glues to the new line
+		# end_lineno is 1-indexed and inclusive, so it already points past the node.
+		lines.insert(node.end_lineno, line + "\n")
+		return "".join(lines)
 	suffix = "" if text.endswith("\n") else "\n"
 	return f"{text}{suffix}{line}\n"
-
-
-def _line_index(text: str, prefix: str) -> int | None:
-	"""Return the 0-indexed line number whose first non-comment content starts with ``prefix =``."""
-	for i, line in enumerate(text.splitlines()):
-		stripped = line.lstrip()
-		if stripped.startswith(f"{prefix} =") or stripped.startswith(f"{prefix}="):
-			return i
-	return None
