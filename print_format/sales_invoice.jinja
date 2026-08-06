@@ -111,6 +111,11 @@
 
 <!-- CONTENT -->
 <div id="text">
+    {% if doc.docstatus == 0 %}
+        <div class="document-status draft">{{ _("Draft") }}</div>
+    {% elif doc.docstatus == 2 %}
+        <div class="document-status cancelled">{{ _("Cancelled") }}</div>
+    {% endif %}
     <div id="subject">
         {% if doc.is_return %}
             <p><strong>{{ _("Correction Invoice") }} {{ doc.name }}</strong></p>
