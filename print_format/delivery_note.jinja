@@ -71,11 +71,16 @@
 
 <!-- CONTENT -->
 <div id="text">
-	<div id="subject">
-		<strong>{{ _("Delivery Note") }} {{ doc.name }}</strong>
+    {% if doc.docstatus == 0 %}
+        <div class="document-status draft">{{ _("Draft") }}</div>
+    {% elif doc.docstatus == 2 %}
+        <div class="document-status cancelled">{{ _("Cancelled") }}</div>
+    {% endif %}
+    <div id="subject">
+        <strong>{{ _("Delivery Note") }} {{ doc.name }}</strong>
     </div>
 
-	<table class="w-100 text-small">
+    <table class="w-100 text-small">
         <thead class="black-border">
             <tr>
                 <th style="width: 10%">{{ _("Sr") }}</th>
