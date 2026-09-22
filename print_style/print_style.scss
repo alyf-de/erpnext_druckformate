@@ -107,6 +107,9 @@
         page-break-inside: auto;
         table-layout: fixed;
 
+        /* Browsers in quirks mode (print preview) reset font on tables */
+        font: inherit;
+
         tr {
             page-break-inside: avoid;
             page-break-after: auto;
@@ -128,8 +131,8 @@
     }
 
     .ql-editor {
-        line-height: 1.42857143;
-        font-family: Inter, "Helvetica Neue", Helvetica, Arial, "Open Sans", sans-serif; // use `var(--font-stack)` for v16+
+        font: inherit;
+        color: inherit;
         overflow: hidden;
 
         p {
